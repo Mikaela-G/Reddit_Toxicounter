@@ -5,6 +5,15 @@ Potential methods of scraping the data:
 ~~- using json links to get data in json format~~
 - using reddit api
 
+Potential roadblocks:
+- using reddit api; can't scrape all the thread titles? (stops after a certain point)
+- figuring out how to get the comments
+
+PRAW Documentation to Read:
+- Subreddit
+- Submission
+- Comment Extraction and Parsing
+
 What we've accomplished today:
 
 What we plan to do before next meeting:
