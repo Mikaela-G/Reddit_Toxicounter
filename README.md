@@ -17,5 +17,9 @@ PRAW Documentation to Read:
 What we've accomplished today:
 
 What we plan to do before next meeting:
+- read the docs
+- scrape all threads of the subreddits, scrape all comments and replies
+- brainstorm subreddits, number of subreddits
+- try to save data into csv
 
 What we plan to do next meeting:
