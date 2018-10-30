@@ -1,7 +1,7 @@
 # Reddit_Toxicounter Progress Timeline
 ### 10/23/18
 Potential methods of scraping the data:
-- using requests & beautiful soup to get data in html format
+- ~~using requests & beautiful soup to get data in html format~~
 - ~~using json links to get data in json format~~
 - using reddit api
 
@@ -10,8 +10,8 @@ Potential roadblocks:
 - figuring out how to get the comments
 
 PRAW Documentation to Read:
-- Subreddit
-- Submission
+- Working with PRAW's Models: Submission
+- Working with PRAW's Models: Subreddit
 - Comment Extraction and Parsing
 
 What we plan to do before next meeting:
@@ -21,3 +21,5 @@ What we plan to do before next meeting:
 - try to save data into csv
 
 What we plan to do next meeting:
+
+### 10/30/18
