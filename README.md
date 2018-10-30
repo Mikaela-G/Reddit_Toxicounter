@@ -1,4 +1,6 @@
 # Reddit_Toxicounter Progress Timeline
+### 10/30/18
+
 ### 10/23/18
 Potential methods of scraping the data:
 - ~~using requests & beautiful soup to get data in html format~~
@@ -21,5 +23,3 @@ What we plan to do before next meeting:
 - try to save data into csv
 
 What we plan to do next meeting:
-
-### 10/30/18
