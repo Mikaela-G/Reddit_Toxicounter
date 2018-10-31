@@ -86,13 +86,14 @@ df.to_csv('submission_id.csv')
 # comments take a LONG time to scrape so we will not do it till we're ready
 '''df = pd.read_csv('submission_id.csv')
 
-comment_df = pd.DataFrame(columns = ['Submission ID', 'Comments'])
+comment_df = pd.DataFrame(columns = ['Submission Type', 'Submission ID', 'Comments'])
 q = 0
 
 for post_id in df['Submission ID']:
     submission = reddit.submission(id = post_id)
     submission.comments.replace_more(limit=None)
     for comment in submission.comments.list():
+        comment_df.loc[q, 'Submission Type'] = df.iloc[q]['Submission Type']
         comment_df.loc[q, 'Submission ID'] = post_id
         comment_df.loc[q, 'Comments'] = comment.body
         q += 1
