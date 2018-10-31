@@ -1,5 +1,8 @@
 # Reddit_Toxicounter Progress Timeline
 ### 10/30/18
+In the pursuit of scraping cleaner data from the get-go, we might want to leave out non-text posts. The following link describes how to implement this in the scraping code.
+https://www.reddit.com/r/redditdev/comments/9064t0/praw_how_can_i_return_what_type_of_post_a/
+
 What we did this meeting:
 
 What we plan to do before next meeting:
