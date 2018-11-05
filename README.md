@@ -4,10 +4,11 @@ In the pursuit of scraping cleaner data from the get-go, we might want to leave 
 https://www.reddit.com/r/redditdev/comments/9064t0/praw_how_can_i_return_what_type_of_post_a/
 
 What we did this meeting:
-
-What we plan to do before next meeting:
+- Added the 'Submission Type' column to the comments.csv created by **reddit_scrape.py**
 
 What we plan to do next meeting:
+- Decide on which subreddits/how many subreddits we're going to scrape (for now at least)
+- Discuss whether or not to leave in non-text posts (with and without comments)
 
 ### 10/23/18
 Potential methods of scraping the data:
