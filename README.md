@@ -7,8 +7,9 @@ What we did this meeting:
 - Filtered out all the emojis and URLs
 
 What we plan to do next meeting:
-- Filter out non-English text
+- Filter out non-English text and do other data cleaning
 - Possibly explore Crimson Hexagon alternative to acquiring Reddit data
+- See how Spacy deals with punctuation (look through old Comp Ling notes?)
 
 ### 10/30/18
 In the pursuit of scraping cleaner data from the get-go, we might want to leave out non-text posts. The following link describes how to implement this in **reddit_scrape.py**.
