@@ -11,7 +11,7 @@ reddit = praw.Reddit(client_id = 'CLkv9Rhfadae3A',
                      username='duyminh1998',
                      password='321thgifoN')
 
-df = pd.DataFrame(columns = ['Submission Type', 'Submission ID'])
+df = pd.DataFrame(columns = ['Submission Type', 'Submission ID', 'Submission Title', 'Submission Selftext'])
 
 # displays the authorization status of our Reddit object
 # print('Read only?: ', reddit.read_only)
@@ -23,58 +23,71 @@ subreddit = reddit.subreddit('TheDonald')
 print('Subreddit name: ', subreddit.display_name)  # Output: redditdev
 print('Subreddit title: ', subreddit.title)         # Output: reddit Development
 
-# generates Subreddit objects for submission types
-hot_subreddit = subreddit.hot(limit=None)
-new_subreddit = subreddit.new(limit=None)
-controversial_subreddit = subreddit.controversial(limit=None)
-top_subreddit = subreddit.top(limit=None)
-# rising_subreddit = subreddit.rising(limit=None)
-
 # grabs all submissions ids for each submission types
-hot_id = [submission.id for submission in hot_subreddit]
+hot_id = [submission.id for submission in subreddit.hot(limit=None)]
+hot_title = [submission.title for submission in subreddit.hot(limit=None)]
+hot_selftext = [submission.selftext for submission in subreddit.hot(limit=None)]
 
 j = 0
 
 for i in range(len(hot_id)):
     df.loc[i, 'Submission Type'] = 'Hot'
     df.loc[i, 'Submission ID'] = hot_id[j]
+    df.loc[i, 'Submission Title'] = hot_title[j]
+    df.loc[i, 'Submission Selftext'] = hot_selftext[j]
     j += 1
 
-new_id = [submission.id for submission in new_subreddit]
+new_id = [submission.id for submission in subreddit.new(limit=None)]
+new_title = [submission.title for submission in subreddit.new(limit=None)]
+new_selftext = [submission.selftext for submission in subreddit.new(limit=None)]
 
 k = 0
 
 for i in range(len(hot_id), len(hot_id) + len(new_id)):
     df.loc[i, 'Submission Type'] = 'new'
     df.loc[i, 'Submission ID'] = new_id[k]
+    df.loc[i, 'Submission Title'] = new_title[k]
+    df.loc[i, 'Submission Selftext'] = new_selftext[k]
     k += 1
 
-controversial_id = [submission.id for submission in controversial_subreddit]
+controversial_id = [submission.id for submission in subreddit.controversial(limit=None)]
+controversial_title = [submission.title for submission in subreddit.controversial(limit=None)]
+controversial_selftext = [submission.selftext for submission in subreddit.controversial(limit=None)]
 
 l = 0
 
 for i in range(len(hot_id) + len(new_id), len(hot_id) + len(new_id) + len(controversial_id)):
     df.loc[i, 'Submission Type'] = 'controversial'
     df.loc[i, 'Submission ID'] = controversial_id[l]
+    df.loc[i, 'Submission Title'] = controversial_title[l]
+    df.loc[i, 'Submission Selftext'] = controversial_selftext[l]
     l += 1
 
-top_id = [submission.id for submission in top_subreddit]
+top_id = [submission.id for submission in subreddit.top(limit=None)]
+top_title = [submission.title for submission in subreddit.top(limit=None)]
+top_selftext = [submission.selftext for submission in subreddit.top(limit=None)]
 
 h = 0
 
 for i in range(len(hot_id) + len(new_id) + len(controversial_id), len(hot_id) + len(new_id) + len(controversial_id) + len(top_id)):
     df.loc[i, 'Submission Type'] = 'top'
     df.loc[i, 'Submission ID'] = top_id[h]
+    df.loc[i, 'Submission Title'] = top_title[h]
+    df.loc[i, 'Submission Selftext'] = top_selftext[h]
     h += 1
 
-'''rising_id = [submission.id for submission in rising_subreddit]
+rising_id = [rising.id for submission in subreddit.rising(limit=None)]
+rising_title = [submission.title for submission in subreddit.rising(limit=None)]
+rising_selftext = [submission.selftext for submission in subreddit.rising(limit=None)]
 
-w = 0
+m = 0
 
-for i in range(len(hot_id) + len(new_id) + len(controversial_id) + len(top_id), len(hot_id) + len(new_id) + len(controversial_id) + len(top_id) + len(rising_id)):
+for i in range(len(hot_id) + len(new_id) + len(controversial_id), len(hot_id) + len(new_id) + len(controversial_id) + len(top_id) + len(rising_id)):
     df.loc[i, 'Submission Type'] = 'rising'
-    df.loc[i, 'Submission ID'] = rising_id[w]
-    w += 1'''
+    df.loc[i, 'Submission ID'] = top_id[m]
+    df.loc[i, 'Submission Title'] = top_title[m]
+    df.loc[i, 'Submission Selftext'] = top_selftext[m]
+    m += 1
 
 # drops any duplicates
 df = df.drop_duplicates()
