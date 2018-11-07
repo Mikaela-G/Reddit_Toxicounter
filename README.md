@@ -5,6 +5,7 @@ A lot of the top subreddits have primarily non-text based threads, albeit with m
 What we did this meeting:
 
 What we plan to do next meeting:
+- Filter out text written in other languages
 
 ### 10/30/18
 In the pursuit of scraping cleaner data from the get-go, we might want to leave out non-text posts. The following link describes how to implement this in **reddit_scrape.py**.
