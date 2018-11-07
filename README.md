@@ -1,11 +1,14 @@
 # Reddit_Toxicounter Progress Timeline
 ### 11/6/18
-A lot of the top subreddits have primarily non-text based threads, albeit with many text comments. Thus, we will not remove non-text posts in our initial scrape of the data. Furthermore, we will be scraping the top 20 subreddits based on Recent Activity on http://redditlist.com/ as of [insert date here].
+A lot of the top subreddits have primarily non-text based threads, albeit with many text comments. Thus, we will not remove non-text posts in our initial scrape of the data. Furthermore, we will be scraping the top 20 subreddits based on Recent Activity on http://redditlist.com/ as of **[insert date here]**.
 
 What we did this meeting:
+- Added the 'Submission Title' and 'Submission Selftext' columns to the comments.csv created by **reddit_scrape.py**
+- Filtered out all the emojis and URLs
 
 What we plan to do next meeting:
-- Filter out text written in other languages
+- Filter out non-English text
+- Possibly explore Crimson Hexagon alternative to acquiring Reddit data
 
 ### 10/30/18
 In the pursuit of scraping cleaner data from the get-go, we might want to leave out non-text posts. The following link describes how to implement this in **reddit_scrape.py**.
