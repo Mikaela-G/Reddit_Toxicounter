@@ -1,6 +1,6 @@
 # Reddit_Toxicounter Progress Timeline
 ### 11/27/18
-Instead of scraping data using the Reddit API, we will now parse JSON data from https://files.pushshift.io/reddit/comments/. We will download all of the comments from 2010-2018 and store comments from the AskReddit, politics, The_Donald, worldnews, nab, videos, funny, todayilearned, soccer, and CFB subreddits into separate CSV (Minh will download 2010-2012, Angel will download 2013-2015, Mikki will download 2016-2018, and each of us will run the script overnight).
+Instead of scraping data using the Reddit API, we will now parse JSON data from https://files.pushshift.io/reddit/comments/. We will download all of the comments from 2010-2018 and store comments from the AskReddit, politics, The_Donald, worldnews, nba, videos, funny, todayilearned, soccer, and CFB subreddits (the top 10 SFW subreddits on http://redditlist.com/ based off of Recent Activity). Minh will download 2010-2012, Angel will download 2013-2015, Mikki will download 2016-2018, and each of us will run the script to collect data overnight.
 
 Some other interesting things we can explore are tracking the toxicity levels and Reddit comment/subreddit content over time, and see how they coincide with real-world events.
 
