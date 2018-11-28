@@ -13,6 +13,7 @@ Some other interesting things we can explore are tracking the toxicity levels an
 
 Everyone:
 - Decide which columns we want to use from dataset; make sure to check what columns are included in different years
+- Add a date column to the dataset
 - Gain access to Perspective API
 - Exploratory Data Analysis
 - Learn about modeling and decide which algorithms to use
