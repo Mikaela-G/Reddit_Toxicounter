@@ -1,6 +1,6 @@
 # Reddit_Toxicounter Progress Timeline
 ### 11/27/18
-Instead of scraping data via the Reddit API, we will now parse JSON data from https://files.pushshift.io/reddit/comments/. We will download all of the comments from 2010-2018 and store comments from the AskReddit, politics, The_Donald, worldnews, nab, videos, funny, todayilearned, soccer, and CFB subreddits into a CSV (Minh will download 2010-2012, Angel will download 2013-2015, Mikki will download 2016-2018, and each of us will run the script overnight).
+Instead of scraping data using the Reddit API, we will now parse JSON data from https://files.pushshift.io/reddit/comments/. We will download all of the comments from 2010-2018 and store comments from the AskReddit, politics, The_Donald, worldnews, nab, videos, funny, todayilearned, soccer, and CFB subreddits into a CSV (Minh will download 2010-2012, Angel will download 2013-2015, Mikki will download 2016-2018, and each of us will run the script overnight).
 
 **Tools we can use**
 - JSON library for parsing
