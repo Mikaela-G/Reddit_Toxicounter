@@ -9,7 +9,7 @@ comments = []
 for line in open(filename, 'r'):
     comments.append(json.loads(line))
 
-dictkeys = list(comments[0].keys())
+dictkeys = ['controversiality', 'subreddit', 'score', 'body', 'permalink']
 
 df = pd.DataFrame(columns = dictkeys)
 j = 0
