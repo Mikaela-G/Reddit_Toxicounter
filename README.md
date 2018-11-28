@@ -1,4 +1,19 @@
 # Reddit_Toxicounter Progress Timeline
+### 11/27/18
+**Tools we can use**
+- Perspective API
+- Spacy similarity function/Word2Vec/TF-IDF
+**Tasks to complete before the end of Winter Break**
+Everyone:
+- Gaining access to Perspective API
+- Exploratory Data Analysis
+- Deciding what information we want to use in our dataset
+Mikki and Angel:
+- Parsing JSON and creating dataset (by the end of finals week)
+Minh:
+- Modeling
+
+
 ### 11/6/18
 A lot of the top subreddits have primarily non-text based threads, albeit with many text comments. Thus, we will not remove non-text posts in our initial scrape of the data. Furthermore, we will be scraping the top 20 subreddits based on Recent Activity on http://redditlist.com/ as of **[insert date here]**.
 
