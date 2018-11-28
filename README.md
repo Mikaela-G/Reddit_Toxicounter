@@ -1,6 +1,7 @@
 # Reddit_Toxicounter Progress Timeline
 ### 11/27/18
 **Tools we can use**
+- JSON library
 - Perspective API
 - Spacy similarity function/Word2Vec/TF-IDF
 
