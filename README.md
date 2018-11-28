@@ -11,7 +11,7 @@ Everyone:
 Mikki and Angel:
 - Parsing JSON and creating dataset (by the end of finals week)
 Minh:
-- Modeling
+- Modeling (before/during Winter Break)
 
 
 ### 11/6/18
