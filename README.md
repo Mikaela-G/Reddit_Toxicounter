@@ -10,13 +10,13 @@ Instead of scraping data via the Reddit API, we will now parse JSON data from ht
 **Tasks to complete before the end of Winter Break**
 
 Everyone:
-- Gaining access to Perspective API
+- Gain access to Perspective API
 - Exploratory Data Analysis
-- Deciding what columns we want to drop from our dataset
 - Learn about modeling and decide which algorithms to use
 
 Mikki and Angel:
-- Parsing JSON and creating dataset (by the end of finals week)
+- Decide which columns we want to drop from dataset (by the end of finals week)
+- Add toxicity labels to dataset using Perspective API
 
 Minh:
 - Modeling (before/during Winter Break)
