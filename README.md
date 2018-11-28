@@ -1,8 +1,10 @@
 # Reddit_Toxicounter Progress Timeline
 ### 11/27/18
+Instead of scraping data via the Reddit API, we will now parse JSON data from https://files.pushshift.io/reddit/comments/. We will download all of the comments from 2010-2018 and store comments from the AskReddit, politics, The_Donald, worldnews, nab, videos, funny, todayilearned, soccer, and CFB subreddits into a CSV (Minh will download 2010-2012, Angel will download 2013-2015, Mikki will download 2016-2018.).
+
 **Tools we can use**
-- JSON library
-- Perspective API
+- JSON library for parsing
+- Perspective API for labeling toxicity on our dataset
 - Spacy similarity function/Word2Vec/TF-IDF
 
 **Tasks to complete before the end of Winter Break**
@@ -10,7 +12,8 @@
 Everyone:
 - Gaining access to Perspective API
 - Exploratory Data Analysis
-- Deciding what information we want to use in our dataset
+- Deciding what columns we want to drop from our dataset
+- Learn about modeling and decide which algorithms to use
 
 Mikki and Angel:
 - Parsing JSON and creating dataset (by the end of finals week)
