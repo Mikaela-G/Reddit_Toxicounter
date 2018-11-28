@@ -1,9 +1,11 @@
 # Reddit_Toxicounter Progress Timeline
 ### 11/27/18
-# Tools we can use
+**Tools we can use**
 - Perspective API
 - Spacy similarity function/Word2Vec/TF-IDF
-# Tasks to complete before the end of Winter Break
+
+**Tasks to complete before the end of Winter Break**
+
 Everyone:
 - Gaining access to Perspective API
 - Exploratory Data Analysis
