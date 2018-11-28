@@ -8,8 +8,10 @@ Everyone:
 - Gaining access to Perspective API
 - Exploratory Data Analysis
 - Deciding what information we want to use in our dataset
+
 Mikki and Angel:
 - Parsing JSON and creating dataset (by the end of finals week)
+
 Minh:
 - Modeling (before/during Winter Break)
 
