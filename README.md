@@ -12,13 +12,13 @@ Some other interesting things we can explore are tracking the toxicity levels an
 **Tasks to complete before the end of Winter Break**
 
 Everyone:
+- Decide which columns we want to use from dataset; make sure to check what columns are included in different years
 - Gain access to Perspective API
 - Exploratory Data Analysis
 - Learn about modeling and decide which algorithms to use
 
 Mikki and Angel:
-- Decide which columns we want to drop from dataset (by the end of finals week)
-- Add toxicity labels to dataset using Perspective API
+- Add toxicity labels to dataset using Perspective API (by the end of finals week)
 
 Minh:
 - Modeling (before/during Winter Break)
