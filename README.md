@@ -14,7 +14,7 @@ So if you want to scrape 2010-2013, after_utc = UNIX equivalent of 2010 and befo
 
 We have attached a new script to scrape reddit comments. The script was partially inspired by Sentdex on his "Building a Chatbot with Deep Learning' video series. The new script stores our comments in batches to a database file, so it does not run the risk of memory errors, etc. There is no need to install any modules because Python comes packaged with sqlite3. 
 
-For first time users, please created a folder named "database" in the same directory as the script. Then, please input the subreddit name and after_utc variable at the top and run the script. The script will continually input the after_utc variable, so if you were to stop the script, make note of the last after_utc. Next time you run the script, you can input that number for the after_utc variable at the top and continue where you've left off. 
+For first time users, please created a folder named "database" in the same directory as the script. Then, please input the subreddit name and after_utc variable at the top and run the script. The script will continually output the after_utc variable, so if you were to stop the script, make note of the last after_utc. Next time you run the script, you can input that number for the after_utc variable at the top and continue where you've left off. 
 
 You can actually see what your databse looks like and what comments it contains if you download DB Browser of Sqlite. 
 Link - https://sqlitebrowser.org/
