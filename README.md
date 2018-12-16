@@ -1,4 +1,25 @@
 # Reddit_Toxicounter Progress Timeline
+### 12/16/18
+We have finalized a method for scraping the reddit comment involving the Pushshift API. Here's the standard link that we will be working with
+'https://api.pushshift.io/reddit/search/comment/?subreddit=' + subreddit + '&size=500&after='+ str(after_utc) + '&fields=parent_id,id,body,created_utc,score
+
+The subreddit and after_utc variables need input. Furthermore, if we wanted to scrape comments in a certain timeframe, we can also add a before= variable to the url. For example, 'https://api.pushshift.io...size=500&after=0&before=.....'
+
+Here is a good website to figure out utc - https://www.unixtimestamp.com/index.php
+
+after_utc = scrape comments after this time
+before_utc = scrape comments before this time
+
+So if you want to scrape 2010-2013, after_utc = UNIX equivalent of 2010 and before_utc = UNIX equivalent of 2013
+
+We have attached a new script to scrape reddit comments. The script was partially inspired by Sentdex on his "Building a Chatbot with Deep Learning' video series. The new script stores our comments in batches to a database file, so it does not run the risk of memory errors, etc. There is no need to install any modules because Python comes packaged with sqlite3. 
+
+For first time users, please created a folder named "database" in the same directory as the script. Then, please input the subreddit name and after_utc variable at the top and run the script. The script will continually input the after_utc variable, so if you were to stop the script, make note of the last after_utc. Next time you run the script, you can input that number for the after_utc variable at the top and continue where you've left off. 
+
+You can actually see what your databse looks like and what comments it contains if you download DB Browser of Sqlite. 
+Link - https://sqlitebrowser.org/
+Just go into the database folder, open up the reddit_comments.db file with DB Browser of Sqlite. 
+
 ### 11/27/18
 Instead of scraping data using the Reddit API, we will now parse JSON data from https://files.pushshift.io/reddit/comments/. We will download all of the comments from 2010-2018 and store comments from the AskReddit, politics, The_Donald, worldnews, nba, videos, funny, todayilearned, soccer, and CFB subreddits (the top 10 SFW subreddits on http://redditlist.com/ based off of Recent Activity). Minh will download 2010-2013, Angel will download 2014-2016, Mikki will download 2017-2018, and each of us will run the script to collect data overnight.
 
