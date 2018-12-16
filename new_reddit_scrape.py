@@ -7,6 +7,7 @@ sql_transaction = []
 connection = sqlite3.connect('database/{}.db'.format('reddit_comments'))
 subreddit = 'The_Donald' # input the subreddit name here
 after_utc = 1469073941 # if this is your first time scraping, put 0, afterwards, whenever you stop scraping, make note of the UTC of the last comment, and put it here next time you scrape
+#before_utc = if you use this variable, please also modify the url link
 continue_scrape = True
 c = connection.cursor()
 
