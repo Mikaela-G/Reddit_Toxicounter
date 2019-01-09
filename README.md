@@ -1,4 +1,26 @@
 # Reddit_Toxicounter Progress Timeline
+### 1/8/18
+We have redesigned our project goals and created a tentative progress timeline.
+
+The Project: We will detect the toxicity of the discourse within the top 10 most
+
+Scrape reddit over the years 2015-2017, detect the toxicity of the discourse within select subreddits. Build a toxicity classifier for reddit comments as opposed to Perspective. Using perspective API to label the existing comments. Potential Domain adaptation into reddit comments.
+
+Step1 "Ground Truth" Week 2-3
+Step2 Model Design/Research Week 4
+
+2015
+Minh - TheDonald, videos, soccer
+Mikaela - AskReddit, politics, worldnews, nba
+Angel - todayilearned, funny, cfb
+
+&gt; tough on ~~crime~~ citizens. newlinechar  newlinechar
+you should probably clean those into their respective characters. &gt; is >
+- markdown formatting?
+- non-english characters
+- html
+- urls
+
 ### 12/16/18
 We have finalized a method for scraping the reddit comment involving the Pushshift API. Here's the standard link that we will be working with
 'https://api.pushshift.io/reddit/search/comment/?subreddit=' + subreddit + '&size=500&after='+ str(after_utc) + '&fields=parent_id,id,body,created_utc,score
