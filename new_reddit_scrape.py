@@ -4,11 +4,10 @@ import requests
 
 sql_transaction = []
 
-connection = sqlite3.connect('database/{}.db'.format('reddit_comments'))
-subreddit = 'The_Donald' # input the subreddit name here
-after_utc = 1469073941 # if this is your first time scraping, put 0, afterwards, whenever you stop scraping, make note of the UTC of the last comment, and put it here next time you scrape
-#before_utc = if you use this variable, please also modify the url link
-continue_scrape = True
+connection = sqlite3.connect('database/{}.db'.format('reddit_comments_2'))
+subreddit = 'soccer' # input the subreddit name here
+after_utc = 1420070400 # if this is your first time scraping, put 0, afterwards, whenever you stop scraping, make note of the UTC of the last comment, and put it here next time you scrape
+before_utc = 1451606400 # no need to change this because our scrape ends in 2016
 c = connection.cursor()
 
 def create_table():
@@ -50,10 +49,15 @@ def sql_insert(parentid, commentid, comment, time, score):
         print('SQL insertion',str(e))
 
 if __name__ == '__main__':
-    create_table()
-    while continue_scrape:
-        try:
-            r = requests.get('https://api.pushshift.io/reddit/search/comment/?subreddit=' + subreddit + '&size=500&after='+ str(after_utc) + '&fields=parent_id,id,body,created_utc,score')
+    try:
+        create_table()
+        # query = """SELECT unix FROM {} ORDER BY unix DESC LIMIT 1""".format(subreddit)
+        # c.execute(query)
+        # after_utc = c.fetchone()[0]
+        number_processed = 0
+        continue_scrape = True
+        while continue_scrape:
+            r = requests.get('https://api.pushshift.io/reddit/search/comment/?subreddit={}&size=500&after={}&before={}&fields=parent_id,id,body,created_utc,score'.format(subreddit, str(after_utc), str(before_utc)))
             parsed_json = json.loads(r.text)
             if len(parsed_json['data']) > 0:
                     for comment in parsed_json['data']:
@@ -66,9 +70,12 @@ if __name__ == '__main__':
                             sql_insert(parent_id, comment_id, body, created_utc, score)
                         else:
                             pass
+                    c.execute("VACUUM")
+                    connection.commit()
                     after_utc = parsed_json['data'][-1]['created_utc']
+                    number_processed += 1
+                    print('Number of pages processed: {}'.format(number_processed), 'Current UTC: {}'.format(after_utc))
             else:
                     continue_scrape = False
-            print(after_utc) 
-        except Exception as e:
-            print(str(e))
+    except Exception as e:
+        print(str(e))
