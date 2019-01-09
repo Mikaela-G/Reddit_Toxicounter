@@ -1,6 +1,6 @@
 # Reddit_Toxicounter Progress Timeline
 ### 1/8/18
-We have redesigned our project goals and created a tentative progress timeline.
+*****We have redesigned our project goals and created a tentative progress timeline.
 
 The Project: We will detect the toxicity of the discourse within the top 10 most
 
@@ -19,7 +19,7 @@ you should probably clean those into their respective characters. &gt; is >
 - markdown formatting?
 - non-english characters
 - html
-- urls
+- urls*****
 
 ### 12/16/18
 We have finalized a method for scraping the reddit comment involving the Pushshift API. Here's the standard link that we will be working with
