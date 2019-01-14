@@ -15,17 +15,12 @@ Week 2-3: "Ground Truth"
   - Angel: todayilearned, funny, cfb
 - Label our dataset for toxicity using Perspective API
 - Clean all the data
+  - Remove non-english characters
+  - Convert html to their respective characters
+  - Decide what to do with URLs and markdown formatting
 
 Week 4: Model Design/Research
-
-*****We have redesigned our project goals and created a tentative progress timeline.
-
-&gt; tough on ~~crime~~ citizens. newlinechar  newlinechar
-you should probably clean those into their respective characters. &gt; is >
-- markdown formatting?
-- non-english characters
-- html
-- urls*****
+- TBA
 
 ### 12/16/18
 We have finalized a method for scraping the reddit comment involving the Pushshift API. Here's the standard link that we will be working with
