@@ -2,13 +2,13 @@
 ### 1/8/18
 We have redesigned our project goals and created a tentative progress timeline.
 
-The Project: We will detect the toxicity of the discourse within the top 10 subreddits (based on Recent Activity on http://redditlist.com/ as of January 8, 2018) throughout 2015.
+**The Project:** We will detect the toxicity of the discourse within the top 10 subreddits (based on Recent Activity on http://redditlist.com/ as of January 8, 2018) throughout 2015.
 
-Future Work: We can build our own toxicity classifier for Reddit comments (instead of using Perspective API's models to label the data). We can also perform domain adaptation into Reddit comments after labeling a different dataset using either our model or the Perspective API.
+**Future Work:** We can build our own toxicity classifier for Reddit comments (instead of using Perspective API's models to label the data). We can also perform domain adaptation into Reddit comments after labeling a different dataset using either our model or the Perspective API.
 
-Progress Timeline:
+**Progress Timeline:**
 
-Week 2-3: "Ground Truth"
+**Week 2-3:** "Ground Truth"
 - Scrape all the data
   - Minh: TheDonald, videos, soccer
   - Mikaela: AskReddit, politics, worldnews, nba
@@ -19,7 +19,7 @@ Week 2-3: "Ground Truth"
   - Convert html to their respective characters
   - Decide what to do with URLs and markdown formatting
 
-Week 4: Model Design/Research
+**Week 4:** Model Design/Research
 - TBA
 
 ### 12/16/18
