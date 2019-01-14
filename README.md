@@ -1,18 +1,24 @@
 # Reddit_Toxicounter Progress Timeline
 ### 1/8/18
+We have redesigned our project goals and created a tentative progress timeline.
+
+The Project: We will detect the toxicity of the discourse within the top 10 subreddits (based on Recent Activity on http://redditlist.com/ as of January 8, 2018) throughout 2015.
+
+Future Work: We can build our own toxicity classifier for Reddit comments (instead of using Perspective API's models to label the data). We can also perform domain adaptation into Reddit comments after labeling a different dataset using either our model or the Perspective API.
+
+Progress Timeline:
+
+Week 2-3: "Ground Truth"
+- Scrape all the data
+  - Minh: TheDonald, videos, soccer
+  - Mikaela: AskReddit, politics, worldnews, nba
+  - Angel: todayilearned, funny, cfb
+- Label our dataset for toxicity using Perspective API
+- Clean all the data
+
+Week 4: Model Design/Research
+
 *****We have redesigned our project goals and created a tentative progress timeline.
-
-The Project: We will detect the toxicity of the discourse within the top 10 most
-
-Scrape reddit over the years 2015-2017, detect the toxicity of the discourse within select subreddits. Build a toxicity classifier for reddit comments as opposed to Perspective. Using perspective API to label the existing comments. Potential Domain adaptation into reddit comments.
-
-Step1 "Ground Truth" Week 2-3
-Step2 Model Design/Research Week 4
-
-2015
-Minh - TheDonald, videos, soccer
-Mikaela - AskReddit, politics, worldnews, nba
-Angel - todayilearned, funny, cfb
 
 &gt; tough on ~~crime~~ citizens. newlinechar  newlinechar
 you should probably clean those into their respective characters. &gt; is >
