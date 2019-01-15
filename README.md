@@ -10,7 +10,7 @@ We have redesigned our project goals and created a tentative progress timeline.
 
 **Week 2-3:** "Ground Truth"
 - Scrape all the data
-  - Minh: TheDonald, videos, soccer
+  - Minh: The_Donald, videos, soccer
   - Mikaela: AskReddit, politics, worldnews, nba
   - Angel: todayilearned, funny, cfb
 - Label our dataset for toxicity using Perspective API
