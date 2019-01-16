@@ -1,17 +1,18 @@
 # Reddit_Toxicounter Progress Timeline
 ### 1/15/18
-All: re-scrape data from 2005-2018 (randomly sample 100,000 comments per year)
-Minh: revise Perspective API script
-Mikaela and Angel: research models and write some ML scripts
+**All:** re-scrape data from 2005-2018 (randomly sample 100,000 comments per year)
+**Minh:** revise Perspective API script
+**Mikaela and Angel:** research models and write some ML scripts
 
-The research question(s) being answered:
+**The research question(s) being answered:**
 - How does toxicity change over time?
 - How does toxicity change over different subreddits?
 - What are the most toxic/least toxic subreddits?
 - What are the most toxic/least toxic topics talked about?
+- ?
 
-Models we can use to answer our research questions (supervised and unsupervised):
-- insert info here
+**Models we can use to answer our research questions (supervised and unsupervised):**
+- ?
 
 ### 1/8/18
 We have redesigned our project goals and created a tentative progress timeline.
