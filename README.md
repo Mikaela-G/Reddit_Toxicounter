@@ -1,7 +1,9 @@
 # Reddit_Toxicounter Progress Timeline
 ### 1/15/18
 **All:** re-scrape data from 2005-2018 (randomly sample 100,000 comments per year)
+
 **Minh:** revise Perspective API script
+
 **Mikaela and Angel:** research models and write some ML scripts
 
 **The research question(s) being answered:**
