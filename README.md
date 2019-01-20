@@ -12,6 +12,7 @@
 - How does toxicity change over different subreddits?
 - What are the most toxic/least toxic subreddits?
 - What are the most toxic/least toxic topics talked about?
+- How is the number of upvotes/downvotes correlated with toxicity?
 - ?
 
 **Models we can use to answer our research questions (supervised and unsupervised):**
