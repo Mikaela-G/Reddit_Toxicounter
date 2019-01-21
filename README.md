@@ -9,8 +9,6 @@
 **The research question(s) being answered:**
 - How does toxicity change over time?
    - Most toxic timeframes/dates?
-- How does toxicity change over different subreddits?
-- What are the most toxic/least toxic subreddits?
 - What are the most toxic/least toxic topics talked about?
 - How is the number of upvotes/downvotes correlated with toxicity?
 - ?
