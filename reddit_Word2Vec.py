@@ -2,15 +2,41 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat Jan 19 15:18:13 2019
-
+Goal: Generate word embeddings using Word2Vec's Skip-Gram Model
+Reference: https://machinelearningmastery.com/develop-word-embeddings-python-gensim/
 @author: Mikki
 """
 
 import sqlite3
 import pandas as pd
+import nltk
+from gensim.models import Word2Vec
 
+# load database into dataframe
 cnx = sqlite3.connect('/Users/Mikki/Documents/GitHub/Reddit_Toxicounter/database/reddit_comments_2.db')
 df = pd.read_sql_query("SELECT * FROM AskReddit", cnx)
+
+# tokenize comments
+df['comment_tok'] = df['comment'].apply(lambda x: nltk.word_tokenize(x))
+
+# train Word2Vec model on tokenized comments
+# NOTE: size should be between 100 and 300, increase if needed for higher accuracy
+model = Word2Vec(df.comment_tok, sg = 1) # skip gram
+print(model)
+
+words = list(model.wv.vocab)
+print(words)
+
+# saves model so it can be re-used
+model.save('model.bin')
+# new_model = Word2Vec.load('--insert model filepath here--')
+# print(new_model)
+
+
+
+
+
+
 
 # we're making two types of models:
 #   3 part classification models that predict toxicity label from word embeddings (and nothing else)
@@ -34,7 +60,7 @@ df = pd.read_sql_query("SELECT * FROM AskReddit", cnx)
 #   create word embeddings using Word2Vec
 
 # for the first type of model:
-#   input for the main model = word embeddings
+#   input for the main model = word embeddings; other linguistic information (like number of uppercase or punctuation or etc.)
 #   output for the main model = toxicity label
 # for the second type of model:
 #   exploring the relationships between the predictors and dependent variable
