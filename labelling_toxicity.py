@@ -96,11 +96,11 @@ for result in (comment for comment in results):
             toxic_label = "very toxic"
         elif result[2]<.9:
             toxic_label = "moderately toxic"
-    elif result[3]>=.1 and result[3]<.75
-		if result[2]>=.4:
-        toxic_label = "moderately toxic"
-		elif result[2]<.4:
-		toxic_label = "not toxic"
+    elif result[3]>=.1 and result[3]<.75:
+        if result[2]>=.4:
+            toxic_label = "moderately toxic"
+        elif result[2]<.4:
+            toxic_label = "not toxic"
     elif result[3]<.1:
         toxic_label = "not toxic"
     # print(toxic_label)
