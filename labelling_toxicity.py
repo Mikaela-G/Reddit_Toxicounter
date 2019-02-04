@@ -3,7 +3,6 @@
 """
 Created on Sat Jan  5 15:24:40 2019
 
-@author: Mikki
 """
 # first time users please run this SQL query in DBrowser for the database you are planning on labeling
 
@@ -20,8 +19,8 @@ import sqlite3
 
 api_token = "AIzaSyBma7dmCTo2Leiu56M5pWzhEA3CW_eu0Fk"
 api_endpoint = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key={}".format(api_token)
-subreddit_name = "AskReddit" # this is your table's name. If my previous scripts worked it should just be the subreddit name
-db_name = "reddit_comments_2" # this is the actual database's name, so check in the database folder for this
+subreddit_name = "todayilearned" # this is your table's name. If my previous scripts worked it should just be the subreddit name
+db_name = "reddit_comments" # this is the actual database's name, so check in the database folder for this
 
 connection = sqlite3.connect("database/{}.db".format(db_name))
 c = connection.cursor()
@@ -43,9 +42,9 @@ def sql_update_2(severe_toxicity, comment_id):
     except Exception as e:
         print('SQL insertion',str(e))
 
-def sql_update_3(real_toxic_label, comment_id):
+def sql_update_3(toxic_label, comment_id):
     try:
-        sql = "UPDATE '{}' SET real_toxic_label = '{}' WHERE comment_id = '{}';".format(subreddit_name, real_toxic_label, comment_id)
+        sql = "UPDATE '{}' SET toxic_label = '{}' WHERE comment_id = '{}';".format(subreddit_name, toxic_label, comment_id)
         # transaction_bldr(sql)
         c.execute(sql)
         connection.commit()
@@ -92,14 +91,18 @@ if __name__ == '__main__':
 c.execute('SELECT comment_id, comment, toxic_score, severe_toxicity FROM {}'.format(subreddit_name)) # WHERE unix > ___
 results = c.fetchall()
 for result in (comment for comment in results):
-    if result[2]>=.7:
-        if result[3]>=.7:
-            real_toxic_label = "very toxic"
-        elif result[3]<=.7:
-            real_toxic_label = "moderately toxic"
-    elif result[2]>=.4 and result[2]<.7:
-        real_toxic_label = "moderately toxic"
-    elif result[2]<.4:
-        real_toxic_label = "not toxic"
+    if result[3]>=.75:
+        if result[2]>=.9:
+            toxic_label = "very toxic"
+        elif result[2]<.9:
+            toxic_label = "moderately toxic"
+    elif result[3]>=.1 and result[3]<.75
+		if result[2]>=.4:
+        toxic_label = "moderately toxic"
+		elif result[2]<.4:
+		toxic_label = "not toxic"
+    elif result[3]<.1:
+        toxic_label = "not toxic"
     # print(toxic_label)
-    sql_update_3(real_toxic_label, result[0])
+    sql_update_3(toxic_label, result[0])
+	
