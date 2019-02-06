@@ -7,7 +7,7 @@ conn = sqlite3.connect("database/AskReddit_2008 - 2011.db")
 c = conn.cursor()
 
 headers = {}
-api_token = "AIzaSyBma7dmCTo2Leiu56M5pWzhEA3CW_eu0Fk"
+api_token = ""
 api_endpoint = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key={}".format(api_token)
 
 last_utc = 0
@@ -29,7 +29,7 @@ def sql_update(toxic_score, severe_toxic, comment_id):
 def transaction_bldr(sql):
     global sql_transaction
     sql_transaction.append(sql)
-    if len(sql_transaction) > 1999:
+    if len(sql_transaction) > 499:
         c.execute('BEGIN TRANSACTION')
         for s in sql_transaction:
             try:
@@ -54,30 +54,37 @@ async def run(api_endpoint, payloads, headers, comment_ids):
             sql_update(toxicity, severe_toxic, comment_id)
 i = 0
 while continue_label == True:
-    payloads = []
-    c.execute('SELECT comment_id, comment, unix FROM {} WHERE unix > {} LIMIT 2000'.format("AskReddit", last_utc))
-    results = c.fetchall()
-    if len(results) > 0:
-        for result in (comment for comment in results):
-            payload = {
-              "comment": {
-                 "text": "{}".format(result[1]),
-              },
-              "languages": ["en"],
-              "requestedAttributes": {
-                "TOXICITY": {},
-                "SEVERE_TOXICITY": {}
-              }
-            }
-            payloads.append(json.dumps(payload))
-        comment_ids = [comment[0] for comment in results]
-        loop = asyncio.get_event_loop()
-        future = asyncio.ensure_future(run(api_endpoint, payloads, headers, comment_ids))
-        loop.run_until_complete(future)
-        last_utc = results[-1][2]
-        print("Number of comments labelled: ", i*2000)
-        i += 1
-    elif i == 2:
-        continue_label = False
-    else:
-        continue_label = False
+    try:
+        payloads = []
+        c.execute('SELECT comment_id, comment, unix FROM {} WHERE unix > {} LIMIT 500'.format("AskReddit", last_utc))
+        results = c.fetchall()
+        if len(results) > 0:
+            for result in (comment for comment in results):
+                payload = {
+                  "comment": {
+                     "text": "{}".format(result[1]),
+                  },
+                  "languages": ["en"],
+                  "requestedAttributes": {
+                    "TOXICITY": {},
+                    "SEVERE_TOXICITY": {}
+                  }
+                }
+                payloads.append(json.dumps(payload))
+            comment_ids = [comment[0] for comment in results]
+            loop = asyncio.get_event_loop()
+            future = asyncio.ensure_future(run(api_endpoint, payloads, headers, comment_ids))
+            loop.run_until_complete(future)
+            last_utc = results[-1][2]
+            print("Number of comments labelled: ", i*500)
+            i += 1
+        elif i == 2:
+            continue_label = False
+        else:
+            continue_label = False
+    except (KeyboardInterrupt, SystemExit):
+        connection.commit()
+        connection.close()
+    except Exception as e:
+        print(str(e))
+
