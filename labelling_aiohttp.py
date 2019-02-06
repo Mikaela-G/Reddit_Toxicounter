@@ -17,7 +17,7 @@ sql_transaction = []
 continue_label = True
 
 async def fetch(url, session, data, headers):
-    async with session.post(url, data=data, headers=headers) as response:
+    async with session.post(url, data=json.dumps(data), headers=headers) as response:
         return await response.read()
     
 def sql_update(toxic_score, severe_toxic, comment_id):
@@ -30,7 +30,7 @@ def sql_update(toxic_score, severe_toxic, comment_id):
 def transaction_bldr(sql):
     global sql_transaction
     sql_transaction.append(sql)
-    if len(sql_transaction) > 499:
+    if len(sql_transaction) > 449:
         c.execute('BEGIN TRANSACTION')
         for s in sql_transaction:
             try:
@@ -39,11 +39,6 @@ def transaction_bldr(sql):
                 print('SQL Transaction', str(e))
         conn.commit()
         sql_transaction = []
-
-def clean_comment(data):
-    comment = data.replace(' newlinechar ','').replace(' newlinechar ','').replace('"',"'")
-    comment = re.sub(r'http\S+', '', comment)
-    return comment
 
 async def run(api_endpoint, payloads, headers, comment_ids):
     tasks = []
@@ -55,9 +50,12 @@ async def run(api_endpoint, payloads, headers, comment_ids):
         responses = await asyncio.gather(*tasks)
         print("Number of Responses: ", len(responses))
         for response, comment_id in zip(responses, comment_ids):
-            toxicity = json.loads(response)["attributeScores"]["TOXICITY"]['spanScores'][0]['score']['value']
-            severe_toxic = json.loads(response)["attributeScores"]["SEVERE_TOXICITY"]['spanScores'][0]['score']['value']
-            sql_update(toxicity, severe_toxic, comment_id)
+            try:
+                toxicity = json.loads(response.decode('utf-8'))["attributeScores"]["TOXICITY"]['spanScores'][0]['score']['value']
+                severe_toxic = json.loads(response.decode('utf-8'))["attributeScores"]["SEVERE_TOXICITY"]['spanScores'][0]['score']['value']
+                sql_update(toxicity, severe_toxic, comment_id)
+            except:
+                pass
 
 if __name__ == '__main__':
     i = 0
@@ -68,17 +66,20 @@ if __name__ == '__main__':
             results = c.fetchall()
             if len(results) > 0:
                 for result in (comment for comment in results):
-                    payload = {
-                      "comment": {
-                         "text": "{}".format(clean_comment(result[1])),
-                      },
-                      "languages": ["en"],
-                      "requestedAttributes": {
-                        "TOXICITY": {},
-                        "SEVERE_TOXICITY": {}
-                      }
-                    }
-                    payloads.append(json.dumps(payload))
+                    if result[1] != '':
+                        payload = {
+                          "comment": {
+                             "text": "{}".format(result[1]),
+                          },
+                          "languages": ["en"],
+                          "requestedAttributes": {
+                            "TOXICITY": {},
+                            "SEVERE_TOXICITY": {}
+                          }
+                        }
+                        payloads.append(payload)
+                    else:
+                        pass
                 comment_ids = [comment[0] for comment in results]
                 loop = asyncio.get_event_loop()
                 future = asyncio.ensure_future(run(api_endpoint, payloads, headers, comment_ids))
@@ -92,9 +93,7 @@ if __name__ == '__main__':
             conn.commit()
             conn.close()
             loop.close()
+            continue_label = False
         except Exception as e:
             print(str(e))
-            conn.commit()
-            conn.close()
-            loop.close()
 
