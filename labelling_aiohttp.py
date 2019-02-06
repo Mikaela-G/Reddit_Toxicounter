@@ -2,12 +2,13 @@ import asyncio
 from aiohttp import ClientSession
 import sqlite3
 import json
+import re
 
 conn = sqlite3.connect("database/AskReddit_2008 - 2011.db")
 c = conn.cursor()
 
 headers = {}
-api_token = ""
+api_token = "AIzaSyBma7dmCTo2Leiu56M5pWzhEA3CW_eu0Fk"
 api_endpoint = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key={}".format(api_token)
 
 last_utc = 0
@@ -39,6 +40,11 @@ def transaction_bldr(sql):
         conn.commit()
         sql_transaction = []
 
+def clean_comment(data):
+    comment = data.replace(' newlinechar ','').replace(' newlinechar ','').replace('"',"'")
+    comment = re.sub(r'http\S+', '', comment)
+    return comment
+
 async def run(api_endpoint, payloads, headers, comment_ids):
     tasks = []
     async with ClientSession() as session:
@@ -52,39 +58,43 @@ async def run(api_endpoint, payloads, headers, comment_ids):
             toxicity = json.loads(response)["attributeScores"]["TOXICITY"]['spanScores'][0]['score']['value']
             severe_toxic = json.loads(response)["attributeScores"]["SEVERE_TOXICITY"]['spanScores'][0]['score']['value']
             sql_update(toxicity, severe_toxic, comment_id)
-i = 0
-while continue_label == True:
-    try:
-        payloads = []
-        c.execute('SELECT comment_id, comment, unix FROM {} WHERE unix > {} LIMIT 500'.format("AskReddit", last_utc))
-        results = c.fetchall()
-        if len(results) > 0:
-            for result in (comment for comment in results):
-                payload = {
-                  "comment": {
-                     "text": "{}".format(result[1]),
-                  },
-                  "languages": ["en"],
-                  "requestedAttributes": {
-                    "TOXICITY": {},
-                    "SEVERE_TOXICITY": {}
-                  }
-                }
-                payloads.append(json.dumps(payload))
-            comment_ids = [comment[0] for comment in results]
-            loop = asyncio.get_event_loop()
-            future = asyncio.ensure_future(run(api_endpoint, payloads, headers, comment_ids))
-            loop.run_until_complete(future)
-            last_utc = results[-1][2]
-            print("Number of comments labelled: ", i*500)
-            i += 1
-        elif i == 2:
-            continue_label = False
-        else:
-            continue_label = False
-    except (KeyboardInterrupt, SystemExit):
-        connection.commit()
-        connection.close()
-    except Exception as e:
-        print(str(e))
+
+if __name__ == '__main__':
+    i = 0
+    while continue_label == True:
+        try:
+            payloads = []
+            c.execute('SELECT comment_id, comment, unix FROM {} WHERE unix > {} LIMIT 450'.format("AskReddit", last_utc))
+            results = c.fetchall()
+            if len(results) > 0:
+                for result in (comment for comment in results):
+                    payload = {
+                      "comment": {
+                         "text": "{}".format(clean_comment(result[1])),
+                      },
+                      "languages": ["en"],
+                      "requestedAttributes": {
+                        "TOXICITY": {},
+                        "SEVERE_TOXICITY": {}
+                      }
+                    }
+                    payloads.append(json.dumps(payload))
+                comment_ids = [comment[0] for comment in results]
+                loop = asyncio.get_event_loop()
+                future = asyncio.ensure_future(run(api_endpoint, payloads, headers, comment_ids))
+                loop.run_until_complete(future)
+                last_utc = results[-1][2]
+                print("Number of comments labelled: ", i*450)
+                i += 1
+            else:
+                continue_label = False
+        except (KeyboardInterrupt, SystemExit):
+            conn.commit()
+            conn.close()
+            loop.close()
+        except Exception as e:
+            print(str(e))
+            conn.commit()
+            conn.close()
+            loop.close()
 
