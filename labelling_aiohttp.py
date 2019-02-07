@@ -11,7 +11,8 @@ headers = {}
 api_token = "AIzaSyBma7dmCTo2Leiu56M5pWzhEA3CW_eu0Fk"
 api_endpoint = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key={}".format(api_token)
 
-last_utc = 0
+c.execute("SELECT unix from AskReddit WHERE toxicity IS NOT NULL ORDER BY unix DESC LIMIT 1;")
+last_utc = c.fetchall()[0][0]
 sql_transaction = []
 
 continue_label = True
@@ -40,6 +41,12 @@ def transaction_bldr(sql):
         conn.commit()
         sql_transaction = []
 
+def clean_comment(data):
+    comment = data.replace(' newlinechar ', '').replace('"',"'")
+    # comment = re.sub(r'http\S+', '', comment)
+    comment = re.sub('&amp', '', comment)
+    return comment
+
 async def run(api_endpoint, payloads, headers, comment_ids):
     tasks = []
     async with ClientSession() as session:
@@ -54,7 +61,8 @@ async def run(api_endpoint, payloads, headers, comment_ids):
                 toxicity = json.loads(response.decode('utf-8'))["attributeScores"]["TOXICITY"]['spanScores'][0]['score']['value']
                 severe_toxic = json.loads(response.decode('utf-8'))["attributeScores"]["SEVERE_TOXICITY"]['spanScores'][0]['score']['value']
                 sql_update(toxicity, severe_toxic, comment_id)
-            except:
+            except Exception as e:
+                print(str(e))
                 pass
 
 if __name__ == '__main__':
@@ -69,7 +77,7 @@ if __name__ == '__main__':
                     if result[1] != '':
                         payload = {
                           "comment": {
-                             "text": "{}".format(result[1]),
+                             "text": "{}".format(clean_comment(result[1])),
                           },
                           "languages": ["en"],
                           "requestedAttributes": {
@@ -84,10 +92,17 @@ if __name__ == '__main__':
                 loop = asyncio.get_event_loop()
                 future = asyncio.ensure_future(run(api_endpoint, payloads, headers, comment_ids))
                 loop.run_until_complete(future)
-                last_utc = results[-1][2]
+                c.execute("SELECT unix from AskReddit WHERE toxicity IS NOT NULL ORDER BY unix DESC LIMIT 1;")
+                last_utc = c.fetchall()[0][0]
+                print(last_utc)
                 print("Number of comments labelled: ", i*450)
                 i += 1
             else:
+                continue_label = False
+            if (i % 4 == 0):
+                conn.commit()
+                conn.close()
+                loop.close()
                 continue_label = False
         except (KeyboardInterrupt, SystemExit):
             conn.commit()
@@ -96,4 +111,3 @@ if __name__ == '__main__':
             continue_label = False
         except Exception as e:
             print(str(e))
-
