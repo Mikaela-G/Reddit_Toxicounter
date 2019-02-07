@@ -2,17 +2,44 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat Jan 19 15:18:13 2019
-Goal: Generate word embeddings using Word2Vec's Skip-Gram Model
-Reference 1: https://machinelearningmastery.com/develop-word-embeddings-python-gensim/
-Reference 2: https://blog.cambridgespark.com/tutorial-build-your-own-embedding-and-use-it-in-a-neural-network-e9cde4a81296
+Goals:
+    Generate word embeddings using Word2Vec's Skip-Gram Model
+    Create multi-class classification models to predict toxic_label from comment vectors
+        Logistic Regression (Angel)
+        Naive Bayes (Angel)
+        Random Forest (Angel)
+        SVM (Mikki)
+        K-Nearest Neighbor (Minh)
+        RNN (Mikki)
+        BERT? using AWS server
+References:
+    https://machinelearningmastery.com/develop-word-embeddings-python-gensim/
+    https://blog.cambridgespark.com/tutorial-build-your-own-embedding-and-use-it-in-a-neural-network-e9cde4a81296
+    https://machinelearningmastery.com/use-word-embedding-layers-deep-learning-keras/
 @author: Mikki
 """
+
+# Here are the changes we're going to make to the structure of our script.
+# 1) We're going to take out the lower 1/3 or 2/3 frequent words and replace them with <UNK>
+# 2) We're going to train the Word2Vec model on the entire dataframe, not just on the train set.
+#   (In other words, we'll train/test split after creating the w2v model)
+# 3) When we do the train/test split, we'll set the seed so that it's replicable for all the models (since it's usually randomized).
+# 4) For logistic regression, (and possibly other sklearn algorithms) we'll want to take either the min, max, or mean of the word vectors within each sentence instead of feeding the embeddings one by one like we'll do for the RNN.
+# 5) When developing your models, use a very small subset of the data (only 50 rows) so that it runs faster!
 
 import sqlite3
 import pandas as pd
 import nltk
+import numpy as np
 from sklearn.model_selection import train_test_split
 from gensim.models import Word2Vec
+from gensim.models import KeyedVectors
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import Flatten
+from keras.layers.embeddings import Embedding
 
 # ------------------------------------- Word2Vec ------------------------------------- #
 
@@ -20,30 +47,111 @@ from gensim.models import Word2Vec
 cnx = sqlite3.connect('/Users/Mikki/Documents/GitHub/Reddit_Toxicounter/database/reddit_comments_2.db')
 df = pd.read_sql_query("SELECT * FROM AskReddit", cnx)
 
+# strips out any weird characters that are not in the set defined below
+df['comment'] = df['comment'].replace('[^a-zA-Z0-9.,;:/\[\]\(\) ]', '', regex=True)
+
 # tokenize comments
 df['comment_tok'] = df['comment'].apply(lambda x: nltk.word_tokenize(x))
 
 # split into train/test sets
 train, test = train_test_split(df, test_size=0.2)
 
-# train Word2Vec model on tokenized comments
-w2v_model = Word2Vec(train.comment_tok, size=300, window=10, min_count=5, negative=15, iter=10, sg=1) # skip gram
-print(w2v_model)
+# train Word2Vec skip gram model on tokenized comments
+w2v_model = Word2Vec(train.comment_tok, size=300, window=10, min_count=5, negative=15, iter=10, sg=1) # print(w2v_model)
 
 # gets vocabulary
-words = list(w2v_model.wv.vocab)
-print(words)
+vocab = list(w2v_model.wv.vocab) # print(words)
+
+# store word-vector pairs in dictionary
+w2v_embed_dict = {word: w2v_model.wv[word] for word in vocab}
 
 # saves word embeddings so they can be re-used for different classification models
-w2v_model.wv.save_word2vec_format('w2v_model_wv.txt', binary=False)
+# w2v_model.wv.save_word2vec_format('w2v_model_wv.txt', binary=False)
 
 # ------------------------------------- Logistic Regression ------------------------------------- #
-
+# Angel
+# ------------------------------------- Naive Bayes ------------------------------------- #
+# Angel
 # ------------------------------------- Random Forest ------------------------------------- #
+# Angel
+# ------------------------------------- SVM (linear) ------------------------------------- #
+# Mikki
+# ------------------------------------- K-Nearest Neighbor ------------------------------------- #
+# Minh
+# ------------------------------------- RNN (LSTM) ------------------------------------- #
+# Mikki
 
-# ------------------------------------- SVM ------------------------------------- #
+# define documents
+docs = list(df.comment)
 
-# ------------------------------------- RNN? ------------------------------------- #
+# encode and define labels as numbers --> have to do one hot encoding!!!
+def encode_toxic_label(label):
+    if label == 'not toxic':
+        return 0
+    elif label == 'moderately toxic':
+        return 1
+    elif label == 'very toxic':
+        return 2
+df['toxic_label_num'] = df['real_toxic_label'].apply(encode_toxic_label)
+labels = np.array(list(df.toxic_label_num))
+
+# prepare tokenizer (t.word_index returns key-value pairs of token to unique integer)
+t = Tokenizer()
+t.fit_on_texts(docs)
+vocab_size = len(t.word_index) + 1
+
+# integer encode documents (produces list of lists of tokens as integers)
+encoded_docs = t.texts_to_sequences(docs)
+
+# pad sequences so that each doc is the same length
+max_length = max([len(doc) for doc in encoded_docs])
+padded_docs = pad_sequences(encoded_docs, maxlen=max_length, padding='post')
+
+# create a weight matrix for words in training docs
+embedding_matrix = np.zeros((vocab_size, 300))
+for word, index in t.word_index.items():
+    embed_vector = w2v_embed_dict.get(word)
+    if embed_vector is not None:
+        embedding_matrix[index] = embed_vector
+
+# define model
+model = Sequential()
+model.add(Embedding(vocab_size, 300, input_length=max_length))
+model.add(Flatten())
+model.add(Dense(10000, activation='relu'))
+model.add(Dense(100, activation='softmax'))
+
+# compile model
+model.compile(optimizer='rmsprop',
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# summarize model
+print(model.summary())
+
+# fit the model
+model.fit(padded_docs, labels, epochs=50, verbose=0)
+
+# evaluate the model
+loss, accuracy = model.evaluate(padded_docs, labels, verbose=0)
+print('Accuracy: %f' % (accuracy*100))
+
+
+
+
+# so when you build a machine learning model
+# you take the words
+# tokenize them
+# then you map tokens to their vectors
+# then you get the sequence of vectors for a sentence
+# if you're doing a RNN, stack the vectors
+
+# you would feed in each embedding one by one
+# so if your comment was "I like pie"
+# you'd use the embeddings of "I", "like" and "pie" as your input
+
+# what embeddings do you use for words that aren't in the txt file
+# typically you'd just train a single rare words token
 
 
 
