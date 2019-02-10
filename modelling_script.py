@@ -23,7 +23,7 @@ References:
 # * COMPLETE * 1) We're going to take out the lower 1/3 or 2/3 frequent words and replace them with <UNK>
 # * COMPLETE * 2) We're going to train the Word2Vec model on the entire dataframe, not just on the train set.
 #   (In other words, we'll train/test split after creating the w2v model)
-# 3) When we do the train/test split, we'll set the seed so that it's replicable for all the models (since it's usually randomized).
+# * COMPLETE * 3) When we do the train/test split, we'll set the seed so that it's replicable for all the models (since it's usually randomized).
 # 4) For logistic regression, (and possibly other sklearn algorithms) we'll want to take either the min, max, or mean of the word vectors within each sentence instead of feeding the embeddings one by one like we'll do for the RNN.
 # * COMPLETE * 5) When developing your models, use a very small subset of the data (only 50 rows) so that it runs faster!
 
@@ -51,8 +51,9 @@ df = pd.read_sql_query("SELECT * FROM AskReddit", cnx)
 # use first 50 rows as dev set (COMMENT THIS OUT AFTER YOU FINISH SCRIPTING MODELS)
 df = df[:50]
 
-# strips out any weird characters that are not in the set defined below
+# strips out any weird characters and newlinechars
 df['comment'] = df['comment'].replace('[^a-zA-Z0-9.,;:/\[\]\(\) ]', '', regex=True)
+df['comment'] = df['comment'].replace(r'newlinechar', '', regex=True)
 
 # tokenize comments
 df['comment_tok'] = df['comment'].apply(lambda x: nltk.word_tokenize(x))
@@ -81,8 +82,10 @@ w2v_embed_dict = {word: w2v_model.wv[word] for word in vocab}
 #w2v_model.wv.save_word2vec_format('w2v_model_wv.txt', binary=False)
 
 # ------------------------------------- Logistic Regression (Angel) ------------------------------------- #
+
 # split into train/test sets
-train, test = train_test_split(df, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(df['comment_tok'], df['real_toxic_label'], test_size=0.2, random_state=42)
+
 # ------------------------------------- Naive Bayes (Angel) ------------------------------------- #
 # ------------------------------------- Random Forest (Angel) ------------------------------------- #
 # ------------------------------------- SVM (Mikki) ------------------------------------- #
@@ -152,14 +155,10 @@ print('Accuracy: %f' % (accuracy*100))
 # tokenize them
 # then you map tokens to their vectors
 # then you get the sequence of vectors for a sentence
-# if you're doing a RNN, stack the vectors
 
 # you would feed in each embedding one by one
 # so if your comment was "I like pie"
 # you'd use the embeddings of "I", "like" and "pie" as your input
-
-# what embeddings do you use for words that aren't in the txt file
-# typically you'd just train a single rare words token
 
 
 
