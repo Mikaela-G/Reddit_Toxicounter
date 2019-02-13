@@ -13,6 +13,7 @@ Goals:
         LSTM (Mikki)
         BERT? using AWS server
 References:
+    https://machinelearningmastery.com/multi-class-classification-tutorial-keras-deep-learning-library/
     https://machinelearningmastery.com/develop-word-embeddings-python-gensim/
     https://blog.cambridgespark.com/tutorial-build-your-own-embedding-and-use-it-in-a-neural-network-e9cde4a81296
     https://machinelearningmastery.com/use-word-embedding-layers-deep-learning-keras/
@@ -21,25 +22,27 @@ References:
 
 # Here are the changes we're going to make to the structure of our script.
 # * COMPLETE * 1) We're going to take out the lower 1/3 or 2/3 frequent words and replace them with <UNK>
-# * COMPLETE * 2) We're going to train the Word2Vec model on the entire dataframe, not just on the train set.
-#   (In other words, we'll train/test split after creating the w2v model)
-# * COMPLETE * 3) When we do the train/test split, we'll set the seed so that it's replicable for all the models (since it's usually randomized).
-# 4) For logistic regression, (and possibly other sklearn algorithms) we'll want to take either the min, max, or mean of the word vectors within each sentence instead of feeding the embeddings one by one like we'll do for the RNN.
-# * COMPLETE * 5) When developing your models, use a very small subset of the data (only 50 rows) so that it runs faster!
+# 2) For logistic regression, (and possibly other sklearn algorithms) we'll want to take either the min, max, or mean of the word vectors within each sentence instead of feeding the embeddings one by one like we'll do for the RNN.
+# * COMPLETE * 3) When developing your models, use a very small subset of the data (only 50 rows) so that it runs faster!
 
+# Miscellaneous
 import sqlite3
 import pandas as pd
-import nltk
 import numpy as np
+import re
+import nltk
+from nltk.corpus import stopwords
+from bs4 import BeautifulSoup
 from collections import Counter
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 from gensim.models import Word2Vec
-from gensim.models import KeyedVectors
+# Keras
+from keras.utils import np_utils
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import Flatten
+from keras.layers import Dense, Flatten, LSTM
 from keras.layers.embeddings import Embedding
 
 # ------------------------------------- Preprocessing ------------------------------------- #
@@ -48,12 +51,29 @@ from keras.layers.embeddings import Embedding
 cnx = sqlite3.connect('/Users/Mikki/Documents/GitHub/Reddit_Toxicounter/database/reddit_comments_2.db')
 df = pd.read_sql_query("SELECT * FROM AskReddit", cnx)
 
-# use first 50 rows as dev set (COMMENT THIS OUT AFTER YOU FINISH SCRIPTING MODELS)
-df = df[:50]
+# use first 60 rows as dev set (COMMENT THIS OUT AFTER YOU FINISH SCRIPTING MODELS)
+df = df[:60]
 
-# strips out any weird characters and newlinechars
-df['comment'] = df['comment'].replace('[^a-zA-Z0-9.,;:/\[\]\(\) ]', '', regex=True)
+# cleans text
+REPLACE_BY_SPACE_RE = re.compile('[/(){}\[\]\|@,;]')
+BAD_SYMBOLS_RE = re.compile('[^0-9a-z #+_]')
+STOPWORDS = set(stopwords.words('english'))
+
+def clean_text(text):
+    """
+        text: a string
+        
+        return: modified initial string
+    """
+    text = BeautifulSoup(text, "lxml").text # HTML decoding
+    text = text.lower() # lowercase text
+    text = REPLACE_BY_SPACE_RE.sub(' ', text) # replace REPLACE_BY_SPACE_RE symbols by space in text
+    text = BAD_SYMBOLS_RE.sub('', text) # delete symbols which are in BAD_SYMBOLS_RE from text
+    text = ' '.join(word for word in text.split() if word not in STOPWORDS) # delete stopwords from text
+    return text
+
 df['comment'] = df['comment'].replace(r'newlinechar', '', regex=True)
+df['comment'] = df['comment'].apply(clean_text)
 
 # tokenize comments
 df['comment_tok'] = df['comment'].apply(lambda x: nltk.word_tokenize(x))
@@ -62,18 +82,24 @@ df['comment_tok'] = df['comment'].apply(lambda x: nltk.word_tokenize(x))
 flat_list = [word for comment in df.comment_tok for word in comment]
 c = Counter(flat_list)
 
-# replace low frequency words (freq < 5) with <UNK>
-def low_freq_to_UNK(comment):
-    return [word if c[word]>5 else '<UNK>' for word in comment]
-df['comment_tok'] = df['comment_tok'].apply(low_freq_to_UNK)
+# replace low frequency words (freq < 5) with <unk>
+def low_freq_to_unk(comment):
+    return [word if c[word]>2 else '<unk>' for word in comment]
+df['comment_tok'] = df['comment_tok'].apply(low_freq_to_unk)
+
+# split into train/test sets
+X = df.comment_tok
+y = df.real_toxic_label # NOTE: THIS WILL BE TOXIC_LABEL FOR THE FINAL VERSION
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+dimsize = 300
 
 # ------------------------------------- Word2Vec ------------------------------------- #
 
 # train Word2Vec skip gram model on tokenized comments
-w2v_model = Word2Vec(df.comment_tok, size=300, window=10, min_count=5, negative=15, iter=10, sg=1) # print(w2v_model)
+w2v_model = Word2Vec(X_train, size=dimsize, window=10, min_count=5, negative=15, iter=10, sg=1) # print(w2v_model)
 
 # gets vocabulary
-vocab = list(w2v_model.wv.vocab) # print(words)
+vocab = list(w2v_model.wv.vocab) # print(vocab)
 
 # store word-vector pairs in dictionary
 w2v_embed_dict = {word: w2v_model.wv[word] for word in vocab}
@@ -82,41 +108,30 @@ w2v_embed_dict = {word: w2v_model.wv[word] for word in vocab}
 #w2v_model.wv.save_word2vec_format('w2v_model_wv.txt', binary=False)
 
 # ------------------------------------- Logistic Regression (Angel) ------------------------------------- #
-
-# split into train/test sets
-X_train, X_test, y_train, y_test = train_test_split(df['comment_tok'], df['real_toxic_label'], test_size=0.2, random_state=42)
-
 # ------------------------------------- Naive Bayes (Angel) ------------------------------------- #
 # ------------------------------------- Random Forest (Angel) ------------------------------------- #
-# ------------------------------------- SVM (Mikki) ------------------------------------- #
-# ------------------------------------- K-Nearest Neighbor (Minh) ------------------------------------- #
+# ------------------------------------- SVM (Minh) ------------------------------------- #
+# ------------------------------------- K-Nearest Neighbor (Mikki) ------------------------------------- #
 # ------------------------------------- LSTM (Mikki) ------------------------------------- #
 
-# define documents
-docs = list(df.comment)
+# ensures reproducibility
+np.random.seed(42)
+        
+# important training data variables: vocab_size, embedding_matrix, max_length
 
-# encode and define labels as numbers --> have to do one hot encoding!!!
-def encode_toxic_label(label):
-    if label == 'not toxic':
-        return 0
-    elif label == 'moderately toxic':
-        return 1
-    elif label == 'very toxic':
-        return 2
-df['toxic_label_num'] = df['real_toxic_label'].apply(encode_toxic_label)
-labels = np.array(list(df.toxic_label_num))
+######### PREPROCESSING TRAINING DATA FOR MODEL #########
 
-# prepare tokenizer (t.word_index returns key-value pairs of token to unique integer)
+# prepare tokenizer
 t = Tokenizer()
-t.fit_on_texts(docs)
-vocab_size = len(t.word_index) + 1
+t.fit_on_texts(X_train)
+vocab_size = len(t.word_index) + 1 # t.word_index returns key-value pairs of token to unique integer
 
 # integer encode documents (produces list of lists of tokens as integers)
-encoded_docs = t.texts_to_sequences(docs)
+X_train = t.texts_to_sequences(X_train)
 
 # pad sequences so that each doc is the same length
-max_length = max([len(doc) for doc in encoded_docs])
-padded_docs = pad_sequences(encoded_docs, maxlen=max_length, padding='post')
+max_length = max([len(doc) for doc in X_train])
+X_train = pad_sequences(X_train, maxlen=max_length, padding='post')
 
 # create a weight matrix for words in training docs
 embedding_matrix = np.zeros((vocab_size, 300))
@@ -124,10 +139,39 @@ for word, index in t.word_index.items():
     embed_vector = w2v_embed_dict.get(word)
     if embed_vector is not None:
         embedding_matrix[index] = embed_vector
+    else:
+        embedding_matrix[index] = w2v_embed_dict.get('<unk>')
 
+# encode class values as integers
+encoder = LabelEncoder()
+encoder.fit(y_train)
+y_train = encoder.transform(y_train)
+# one hot encode class value integers
+y_train = np_utils.to_categorical(y_train)
+
+######### PREPROCESSING TESTING DATA FOR MODEL #########
+
+# prepare tokenizer
+t = Tokenizer()
+t.fit_on_texts(X_test)
+
+# integer encode documents (produces list of lists of tokens as integers)
+X_test = t.texts_to_sequences(X_test)
+
+# pad sequences so that each doc is the same length
+X_test = pad_sequences(X_test, maxlen=max_length, padding='post')
+
+# encode class values as integers
+encoder = LabelEncoder()
+encoder.fit(y_test)
+y_test = encoder.transform(y_test)
+# one hot encode class value integers
+y_test= np_utils.to_categorical(y_test)
+
+######### MODELING #########
 # define model
 model = Sequential()
-model.add(Embedding(vocab_size, 300, input_length=max_length))
+model.add(Embedding(vocab_size, 300, weights=[embedding_matrix], input_length=max_length))
 model.add(Flatten())
 model.add(Dense(10000, activation='relu'))
 model.add(Dense(100, activation='softmax'))
@@ -141,20 +185,17 @@ model.compile(optimizer='rmsprop',
 print(model.summary())
 
 # fit the model
-model.fit(padded_docs, labels, epochs=50, verbose=0)
+model.fit(X_train, y_train, epochs=50, verbose=0)
 
 # evaluate the model
-loss, accuracy = model.evaluate(padded_docs, labels, verbose=0)
+loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
 print('Accuracy: %f' % (accuracy*100))
 
 
 
 
 # so when you build a machine learning model
-# you take the words
-# tokenize them
-# then you map tokens to their vectors
-# then you get the sequence of vectors for a sentence
+# you take the words, tokenize them, map tokens to their vectors, get the sequence of vectors for a sentence
 
 # you would feed in each embedding one by one
 # so if your comment was "I like pie"
