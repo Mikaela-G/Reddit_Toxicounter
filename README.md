@@ -38,29 +38,12 @@ def sql_insert(commentid, comment, time, score):
     except Exception as e:
         print('SQL insertion',str(e))
 
-def transaction_bldr(sql):
-    global sql_transaction
-    sql_transaction.append(sql)
-    if len(sql_transaction) > 500:
-        c.execute('BEGIN TRANSACTION')
-        for s in sql_transaction:
-            try:
-                c.execute(s)
-            except Exception as e:
-                print('SQL Transaction', str(e))
-        connection.commit()
-        sql_transaction = []
-
 if __name__ == '__main__':
     try:
     	for frame in timeframes:
             after_utc = frame[0]
             before_utc = frame[1]
             create_table()
-            #query = """SELECT unix FROM {} ORDER BY unix DESC LIMIT 1""".format(subreddit)
-            #c.execute(query)
-            #after_utc = c.fetchone()[0]
-            number_processed = 0
             continue_scrape = True
             while number_processed < 250:
                 r = requests.get('https://api.pushshift.io/reddit/search/comment/?subreddit={}&size=500&after={}&before={}&fields=id,body,created_utc,score'.format(subreddit, str(after_utc), str(before_utc)))
@@ -82,13 +65,6 @@ if __name__ == '__main__':
                         after_utc = parsed_json['data'][-1]['created_utc']
                         number_processed += 1
                         print('Number of pages processed: {}'.format(number_processed), 'Number of comments processed: {}'.format(comment_processed), 'Current UTC: {}'.format(after_utc))
-                else:
-                        continue_scrape = False
-    except (KeyboardInterrupt, SystemExit):
-        connection.commit()
-        connection.close()
-    except Exception as e:
-        print(str(e))
 ```
 
 ## Analysis Methodology
