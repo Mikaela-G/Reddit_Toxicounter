@@ -17,6 +17,7 @@ References:
     https://machinelearningmastery.com/develop-word-embeddings-python-gensim/
     https://blog.cambridgespark.com/tutorial-build-your-own-embedding-and-use-it-in-a-neural-network-e9cde4a81296
     https://machinelearningmastery.com/use-word-embedding-layers-deep-learning-keras/
+    https://machinelearningmastery.com/sequence-classification-lstm-recurrent-neural-networks-python-keras/
 @author: Mikki
 """
 
@@ -51,8 +52,8 @@ from keras.layers.embeddings import Embedding
 cnx = sqlite3.connect('/Users/Mikki/Documents/GitHub/Reddit_Toxicounter/database/reddit_comments_2.db')
 df = pd.read_sql_query("SELECT * FROM AskReddit", cnx)
 
-# use first 60 rows as dev set (COMMENT THIS OUT AFTER YOU FINISH SCRIPTING MODELS)
-df = df[:60]
+# use first 100 rows as dev set (COMMENT THIS OUT AFTER YOU FINISH SCRIPTING MODELS)
+df = df[:200]
 
 # cleans text
 REPLACE_BY_SPACE_RE = re.compile('[/(){}\[\]\|@,;]')
@@ -116,8 +117,6 @@ w2v_embed_dict = {word: w2v_model.wv[word] for word in vocab}
 
 # ensures reproducibility
 np.random.seed(42)
-        
-# important training data variables: vocab_size, embedding_matrix, max_length
 
 ######### PREPROCESSING TRAINING DATA FOR MODEL #########
 
@@ -169,12 +168,11 @@ y_test = encoder.transform(y_test)
 y_test= np_utils.to_categorical(y_test)
 
 ######### MODELING #########
-# define model
+
 model = Sequential()
 model.add(Embedding(vocab_size, 300, weights=[embedding_matrix], input_length=max_length))
-model.add(Flatten())
-model.add(Dense(10000, activation='relu'))
-model.add(Dense(100, activation='softmax'))
+model.add(LSTM(300))
+model.add(Dense(3, activation='softmax'))
 
 # compile model
 model.compile(optimizer='rmsprop',
@@ -185,7 +183,7 @@ model.compile(optimizer='rmsprop',
 print(model.summary())
 
 # fit the model
-model.fit(X_train, y_train, epochs=50, verbose=0)
+model.fit(X_train, y_train, epochs=10, verbose=0)
 
 # evaluate the model
 loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
