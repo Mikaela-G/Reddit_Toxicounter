@@ -3,7 +3,94 @@
 ## Motivation
 
 ## Scraping Methodology
-Important in every data analysis task is the retrieval, wrangling, and cleaning of data - in this respect, our group had no shortage of challenges. The number one concern in dealing with Reddit comment data is its sheer volume - one month's worth of one subreddit data can take more than 1 to 2 GB to store. This roadblock generated two practical concerns: the time it takes to scrape the data, and the memory limitations Python imposes. As a result, clever data scraping and handling technique had to be implemented in order to surmount the obstacle. 
+Important in every data analysis task is the retrieval, wrangling, and cleaning of data - in this respect, our group had no shortage of challenges. The number one concern when dealing with Reddit comment data is its sheer volume - one month's worth of comments from one subreddit can take more than 5 GB to store. This roadblock generated two practical concerns: the time it takes to scrape the data, and the memory limitations Python imposes. As a result, clever data scraping and handling technique had to be implemented in order to surmount the obstacle. 
+
+In the beginning, we used the Praw API to directly scrape Reddit for comments, but this endeavour was hampered by shoddy internet connections and Python's memory limitations. As a result, we examined Pushshift.io, an online database/archive of **all** Reddit comments from the site's conception. The site had an API that allowed for intelligent queries of comments from specific subreddits, timeframes, alongside other criterion. 
+
+At our project's conception, we weren't clear and concise on our thesis question, which lead to a scraping pattern that was highly inefficient; we basically scraped comments from ten of the most popular subreddits, which soon proved to be impossible due to volume. As a result, once we imporved upon our research question to only scrape **one** subreddit, we were able to much more efficiently retrieve the data. 
+
+This also brought with it many challenges. As mentioned before, one month's worth of comments from one subreddit alone can tally up to 20 million comments. Pressured by an approaching deadline and limitations on work hours, we came to the conclusion that scraping samples of data were the optimal solution. By scraping a predetermined percentage of comments from each month, we were able to cover the scope of a subreddit's sentiment, to see how its temperament change over time, how it reacts to noteworthy events. We finally reached the best scraping mindset, and all that was left to do was implemenation. 
+
+In terms of implementation, the workhorse of our scripts were requests, aiohttp, asyncio, and sqlite3. These four "horsemen of the pycalypse" ran incessantly for weeks, retrieving thousands of comments per second and storing them in a local SQL database. Here's a sample pseudo code of the process:
+
+```python
+subreddit = "AskReddit"
+timeframes = [(1233446400, 1235865600), (1235865600, 1238544000), (1238544000, 1272672000), (1272672000, 1243814400), (1243814400, 1246406400), (1246406400, 1249084800), (1249084800, 1251763200), (1251763200, 1254355200), (1254355200, 1257033600), (1257033600, 1259625600), (1259625600, 1262304000)]
+sql_transaction = []
+
+connection = sqlite3.connect('database/{}.db'.format(subreddit + timeframe))
+c = connection.cursor()
+
+def create_table():
+    c.execute("CREATE TABLE IF NOT EXISTS " + subreddit + " (comment_id TEXT PRIMARY KEY, comment TEXT, unix INT, score INT, toxicity REAL)")
+
+def clean_data(data):
+    comment = data.replace('\n',' newlinechar ').replace('\r',' newlinechar ').replace('"',"'")
+    # comment = re.sub(r'http\S+', '', comment)
+    comment = re.sub('&gt;', '', comment)
+    comment = re.sub('&lt;', '', comment)
+    return comment
+
+def sql_insert(commentid, comment, time, score):
+    try:
+        sql = """INSERT INTO """ + subreddit + """(comment_id, comment, unix, score) VALUES ("{}","{}",{},{});""".format(commentid, comment, int(time), score)
+        transaction_bldr(sql)
+    except Exception as e:
+        print('SQL insertion',str(e))
+
+def transaction_bldr(sql):
+    global sql_transaction
+    sql_transaction.append(sql)
+    if len(sql_transaction) > 500:
+        c.execute('BEGIN TRANSACTION')
+        for s in sql_transaction:
+            try:
+                c.execute(s)
+            except Exception as e:
+                print('SQL Transaction', str(e))
+        connection.commit()
+        sql_transaction = []
+
+if __name__ == '__main__':
+    try:
+    	for frame in timeframes:
+            after_utc = frame[0]
+            before_utc = frame[1]
+            create_table()
+            #query = """SELECT unix FROM {} ORDER BY unix DESC LIMIT 1""".format(subreddit)
+            #c.execute(query)
+            #after_utc = c.fetchone()[0]
+            number_processed = 0
+            continue_scrape = True
+            while number_processed < 250:
+                r = requests.get('https://api.pushshift.io/reddit/search/comment/?subreddit={}&size=500&after={}&before={}&fields=id,body,created_utc,score'.format(subreddit, str(after_utc), str(before_utc)))
+                parsed_json = json.loads(r.text)
+                if len(parsed_json['data']) > 0:
+                        comment_processed = 0
+                        for comment in parsed_json['data']:
+                            body = clean_data(comment['body'])
+                            if acceptable(body):
+                                created_utc = comment['created_utc']
+                                score = comment['score']
+                                comment_id = comment['id']
+                                sql_insert(comment_id, body, created_utc, score)
+                                comment_processed += 1
+                            else:
+                                pass
+                        c.execute("VACUUM")
+                        connection.commit()
+                        after_utc = parsed_json['data'][-1]['created_utc']
+                        number_processed += 1
+                        print('Number of pages processed: {}'.format(number_processed), 'Number of comments processed: {}'.format(comment_processed), 'Current UTC: {}'.format(after_utc))
+                else:
+                        continue_scrape = False
+    except (KeyboardInterrupt, SystemExit):
+        connection.commit()
+        connection.close()
+    except Exception as e:
+        print(str(e))
+```
+
 ## Analysis Methodology
 
 ## Results
