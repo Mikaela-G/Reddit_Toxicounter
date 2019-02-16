@@ -1,3 +1,13 @@
+# Project Page Template (Header)
+
+## Motivation
+
+## Scraping Methodology
+Important in every data analysis task is the retrieval, wrangling, and cleaning of data - in this respect, our group had no shortage of challenges. The number one concern in dealing with Reddit comment data is its sheer volume - one month's worth of one subreddit data can take more than 1 to 2 GB to store. This roadblock generated two practical concerns: the time it takes to scrape the data, and the memory limitations Python imposes. As a result, clever data scraping and handling technique had to be implemented in order to surmount the obstacle. 
+## Analysis Methodology
+
+## Results
+
 # Reddit_Toxicounter Progress Timeline
 ### 1/15/18
 **Minh:**
