@@ -3,9 +3,9 @@
 ## Abstract
 
 ## Contributors 
-..* Mikaela Guerrero 
-..* Minh Hua
-..* Angel Chavez
+* Mikaela Guerrero 
+* Minh Hua
+* Angel Chavez
 
 ## Motivation
 
