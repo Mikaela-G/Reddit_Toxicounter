@@ -1,6 +1,7 @@
 # Project Page Template (Header)
-
+# put in hyperlinks later
 ## Abstract
+This project seeks to classify the toxicity of Reddit discourse through the use of machine learning models. Our toxicity ratings are derived from the Perspective API and our models were built in Python with the aid of libraries such as scikit-learn and Keras.
 
 ## Contributors 
 * Mikaela Guerrero 
