@@ -66,6 +66,28 @@ if __name__ == '__main__':
                         number_processed += 1
                         print('Number of pages processed: {}'.format(number_processed), 'Number of comments processed: {}'.format(comment_processed), 'Current UTC: {}'.format(after_utc))
 ```
+And here is a breakdown of the process:
+1. Create a database
+```python 
+connection = sqlite3.connect('database/{}.db'.format(subreddit + timeframe))
+c = connection.cursor()
+
+def create_table():
+    c.execute("CREATE TABLE IF NOT EXISTS " + subreddit + " (comment_id TEXT PRIMARY KEY, comment TEXT, unix INT, score INT, toxicity REAL)")
+```
+2. Scrape data using requests, pushshift.io
+```python 
+r = requests.get('https://api.pushshift.io/reddit/search/comment/?subreddit={}&size=500&after={}&before={}&fields=id,body,created_utc,score'.format(subreddit, str(after_utc), str(before_utc))
+```
+3. Extract the data from the json
+```python
+parsed_json = json.loads(r.text)
+```
+4. Insert data into the database
+```python
+sql_insert(comment_id, body, created_utc, score)
+```
+5. Rinse and repeat
 
 ## Analysis Methodology
 
