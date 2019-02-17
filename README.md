@@ -107,6 +107,12 @@ sql_insert(comment_id, body, created_utc, score)
 5. Rinse and repeat
 
 ## Analysis Methodology
+Our analysis on the toxicity of Reddit comments deals with a relatively standard machine learning problem: multi-label classification. We deal with supervised learning, which in this instance, involves training a classifier on data already labeled for toxicity in order to predict the toxicity of other comments.
+
+Using Perspective API's toxicity and severe toxicity models, we labeled our data with percentages that indicate the level of toxicity for any given comment. We then created our own ground truth by placing comments into one of three categories (not toxic, moderately toxic, and very toxic) based on Perspective's scores.
+
+### A Brief Overview of Classification
+* 
 
 ## Results
 
