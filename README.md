@@ -1,7 +1,7 @@
 # Project Page Template (Header)
 # put in hyperlinks later
 ## Abstract
-This project seeks to classify the toxicity of Reddit discourse through the use of machine learning models. Our toxicity ratings are derived from the Perspective API and our models were built in Python with the aid of libraries such as scikit-learn and Keras. We gathered [insert start year and end year] years worth of AskReddit comments from pushshift.io and store it in SQLite3 databases. [insert stuff about visualizations here].
+This project seeks to classify speech toxicity through the use of machine learning models. Our toxicity ratings are derived from the Perspective API and our models were built in Python with the aid of libraries such as scikit-learn and Keras. We gathered [insert number of years] years worth of AskReddit comments from pushshift.io and store it in SQLite3 databases. [insert stuff about visualizations here].
 
 ## Contributors 
 * Mikaela Guerrero 
@@ -9,6 +9,9 @@ This project seeks to classify the toxicity of Reddit discourse through the use 
 * Angel Chavez
 
 ## Motivation
+The internet has no shortage of toxicity, including threats, derogatory comments, and other such hate speech. For example, in less than 24 hours, Twitter users unwittingly managed to force Microsoft to shut down its chatbot Tay, by teaching it to repeat extremely hate-filled discourse. As such, large social media sites (such as Reddit!) are very hard to moderate. 
+https://www.abc.net.au/news/image/7276334-3x2-700x467.jpg
+[do you need to cite pictures]
 
 ## Scraping Methodology
 Important in every data analysis task is the retrieval, wrangling, and cleaning of data - in this respect, our group had no shortage of challenges. The number one concern when dealing with Reddit comment data is its sheer volume - one month's worth of comments from one subreddit can take more than 5 GB to store. This roadblock generated two practical concerns: the time it takes to scrape the data, and the memory limitations Python imposes. As a result, clever data scraping and handling technique had to be implemented in order to surmount the obstacle. 
