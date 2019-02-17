@@ -30,9 +30,17 @@ import nltk
 from nltk.corpus import stopwords
 from bs4 import BeautifulSoup
 from collections import Counter
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
 from gensim.models import Word2Vec
+import warnings
+
+# Scikit-learn
+from sklearn import linear_model
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.preprocessing import LabelEncoder
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
+
 # Keras
 from keras.utils import np_utils
 from keras.preprocessing.text import Tokenizer
@@ -49,8 +57,9 @@ df = pd.read_sql_query("SELECT * FROM AskReddit", cnx)
 
 # use first 100 rows as dev set (COMMENT THIS OUT AFTER YOU FINISH SCRIPTING MODELS)
 df = df[:200]
+df = df.dropna()
 
-# cleans text
+# cleans text by removing characters and stop words
 REPLACE_BY_SPACE_RE = re.compile('[/(){}\[\]\|@,;]')
 BAD_SYMBOLS_RE = re.compile('[^0-9a-z #+_]')
 STOPWORDS = set(stopwords.words('english'))
@@ -68,8 +77,22 @@ def clean_text(text):
     text = ' '.join(word for word in text.split() if word not in STOPWORDS) # delete stopwords from text
     return text
 
-df['comment'] = df['comment'].replace(r'newlinechar', '', regex=True)
 df['comment'] = df['comment'].apply(clean_text)
+df['comment'] = df['comment'].replace(r'newlinechar', '', regex=True)
+
+# averages the word vectors
+def avg_word_vec(wordlist,size):
+    # Otherwise return an average of the embeddings vectors
+    sumvec=np.zeros(shape=(1,size))
+    wordcnt=0
+        for w in wordlist:
+            if w in w2v_model:
+                sumvec += w2v_model[w]
+                wordcnt +=1
+            if wordcnt ==0:
+                return sumvec
+        else:
+            return sumvec / wordcnt
 
 # tokenize comments
 df['comment_tok'] = df['comment'].apply(lambda x: nltk.word_tokenize(x))
@@ -85,9 +108,15 @@ df['comment_tok'] = df['comment_tok'].apply(low_freq_to_unk)
 
 # split into train/test sets
 X = df.comment_tok
-y = df.real_toxic_label # NOTE: THIS WILL BE TOXIC_LABEL FOR THE FINAL VERSION
+y = df.toxic_label # NOTE: real_toxic_label for current data but TOXIC_LABEL FOR THE FINAL VERSION
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 dimsize = 300
+
+# preserving variables to be used for LSTM
+x_train = X_train
+x_test = X_test
+Y_train = y_train
+Y_test = y_test
 
 # ------------------------------------- Word2Vec ------------------------------------- #
 
@@ -104,8 +133,53 @@ w2v_embed_dict = {word: w2v_model.wv[word] for word in vocab}
 #w2v_model.wv.save_word2vec_format('w2v_model_wv.txt', binary=False)
 
 # ------------------------------------- Logistic Regression (Angel) ------------------------------------- #
+
+# encoding the targets
+le = LabelEncoder()
+y_train = le.fit_transform(y_train)
+y_test = le.fit_transform(y_test)
+
+#averages the word vectors for the comments
+X_train=np.concatenate([avg_word_vec(w,dimsize) for w in X_train])
+X_test=np.concatenate([avg_word_vec(w,dimsize) for w in X_test])
+
+# Fitting Logistic Regression to the Training set
+LR = linear_model.SGDClassifier(loss='log')
+LR.fit(X_train, y_train)
+
+#arguments used in metrics
+y_true = y_test
+y_predLR = LR.predict(X_test)
+
+#metrics for determining success
+print('LRaccuracy %s' % accuracy_score(y_true, y_predLR))
+print(classification_report(y_true, y_predLR,))
+print(confusion_matrix(y_true, y_predLR,))
+
 # ------------------------------------- Naive Bayes (Angel) ------------------------------------- #
+
+# Fitting Naive Bayes to the Training set
+gnb = GaussianNB()
+gnb.fit(X_train, y_train)
+
+#metrics for determining success
+y_predNB = gnb.predict(X_test)
+print('NBaccuracy %s' % accuracy_score(y_true, y_predNB))
+print(classification_report(y_true, y_predNB))
+print(confusion_matrix(y_true, y_predNB))
+
 # ------------------------------------- Random Forest (Angel) ------------------------------------- #
+
+# Fitting Random Forest to the Training set
+forest = RandomForestClassifier(n_estimators = 500)
+forest.fit(X_train, y_train)
+
+#metrics for determining success
+y_predRF = forest.predict(X_test)
+print('RFaccuracy %s' % accuracy_score(y_true, y_predRF))
+print(classification_report(y_true, y_predRF))
+print(confusion_matrix(y_true, y_predRF))
+
 # ------------------------------------- SVM (Minh) ------------------------------------- #
 # ------------------------------------- K-Nearest Neighbor (Mikki) ------------------------------------- #
 # ------------------------------------- LSTM (Mikki) ------------------------------------- #
@@ -117,15 +191,15 @@ np.random.seed(42)
 
 # prepare tokenizer
 t = Tokenizer()
-t.fit_on_texts(X_train)
+t.fit_on_texts(x_train)
 vocab_size = len(t.word_index) + 1 # t.word_index returns key-value pairs of token to unique integer
 
 # integer encode documents (produces list of lists of tokens as integers)
-X_train = t.texts_to_sequences(X_train)
+x_train = t.texts_to_sequences(x_train)
 
 # pad sequences so that each doc is the same length
-max_length = max([len(doc) for doc in X_train])
-X_train = pad_sequences(X_train, maxlen=max_length, padding='post')
+max_length = max([len(doc) for doc in x_train])
+x_train = pad_sequences(x_train, maxlen=max_length, padding='post')
 
 # create a weight matrix for words in training docs
 embedding_matrix = np.zeros((vocab_size, 300))
@@ -138,29 +212,29 @@ for word, index in t.word_index.items():
 
 # encode class values as integers
 encoder = LabelEncoder()
-encoder.fit(y_train)
-y_train = encoder.transform(y_train)
+encoder.fit(Y_train)
+Y_train = encoder.transform(Y_train)
 # one hot encode class value integers
-y_train = np_utils.to_categorical(y_train)
+Y_train = np_utils.to_categorical(Y_train)
 
 ######### PREPROCESSING TESTING DATA FOR MODEL #########
 
 # prepare tokenizer
 t = Tokenizer()
-t.fit_on_texts(X_test)
+t.fit_on_texts(x_test)
 
 # integer encode documents (produces list of lists of tokens as integers)
-X_test = t.texts_to_sequences(X_test)
+x_test = t.texts_to_sequences(x_test)
 
 # pad sequences so that each doc is the same length
-X_test = pad_sequences(X_test, maxlen=max_length, padding='post')
+x_test = pad_sequences(x_test, maxlen=max_length, padding='post')
 
 # encode class values as integers
 encoder = LabelEncoder()
 encoder.fit(y_test)
-y_test = encoder.transform(y_test)
+Y_test = encoder.transform(Y_test)
 # one hot encode class value integers
-y_test= np_utils.to_categorical(y_test)
+Y_test= np_utils.to_categorical(Y_test)
 
 ######### MODELING #########
 
@@ -178,10 +252,10 @@ model.compile(optimizer='rmsprop',
 print(model.summary())
 
 # fit the model
-model.fit(X_train, y_train, epochs=10, verbose=0)
+model.fit(x_train, Y_train, epochs=10, verbose=0)
 
 # evaluate the model
-loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
+loss, accuracy = model.evaluate(x_test, Y_test, verbose=0)
 print('Accuracy: %f' % (accuracy*100))
 
 
@@ -193,9 +267,6 @@ print('Accuracy: %f' % (accuracy*100))
 # you would feed in each embedding one by one
 # so if your comment was "I like pie"
 # you'd use the embeddings of "I", "like" and "pie" as your input
-
-
-
 
 
 # we're making two types of models:
