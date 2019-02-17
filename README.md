@@ -111,6 +111,19 @@ Our analysis on the toxicity of Reddit comments deals with a relatively standard
 
 Using Perspective API's toxicity and severe toxicity models, we labeled our data with percentages that score toxicity for any given comment. We then created our own ground truth by placing comments into one of three categories (not toxic, moderately toxic, and very toxic) based on Perspective's ratings.
 
+## Our Pipeline
+[insert nice flowchart here]
+Data --> Word2Vec --> Machine Learning Models
+
+## From Data to Word2Vec
+* what is Word2Vec and why are we using it/what is the desired output (the word embeddings)
+* how did we preprocess the data for the Word2Vec model
+
+## From Word2Vec to Machine Learning Models
+* give a brief overview of why we used supervised learning and why this is a classification problem
+* list all the classification models we used
+
+# REFORMAT THIS WHOLE SECTION (IGNORE THE BELOW)
 ## A Brief Overview of Classification
 * Two variables considered in building ML models:
     * Comment (tokenized and mapped to word embeddings)
@@ -118,9 +131,9 @@ Using Perspective API's toxicity and severe toxicity models, we labeled our data
         * Very toxic; had a score between [aaa and aaa] for toxicity, [aaa and aaa] for severe toxicity
         * Moderately toxic; had a score between [aaa and aaa] for toxicity, [aaa and aaa] for severe toxicity
         * Not toxic; had a score between [aaa and aaa] for toxicity, [aaa and aaa] for severe toxicity
-
-## Word2Vec
+## Word2Vec (and Word Embeddings)
 Since our Reddit data is text-based, we needed to transform it into an input readable by our machine learning models. To accomplish this, we trained a Word2Vec model on our data to produce word embeddings.
+
 
 
 ## Results
