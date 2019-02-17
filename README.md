@@ -112,7 +112,7 @@ Our analysis on the toxicity of Reddit comments deals with a relatively standard
 Using Perspective API's toxicity and severe toxicity models, we labeled our data with percentages that score toxicity for any given comment. We then created our own ground truth by placing comments into one of three categories (not toxic, moderately toxic, and very toxic) based on Perspective's ratings.
 
 ## Our Text Classification Pipeline
-![](https://drive.google.com/file/d/1OeRxtIDgOSGW25eWwxwn3CGGMl5u3Ygr/)
+![](https://imgur.com/5XQ3xYv)
 
 ## From Data to Word2Vec
 * what is Word2Vec and why are we using it/what is the desired output (the word embeddings)
