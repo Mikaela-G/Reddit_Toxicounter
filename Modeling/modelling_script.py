@@ -21,11 +21,6 @@ References:
 @author: Mikki
 """
 
-# Here are the changes we're going to make to the structure of our script.
-# * COMPLETE * 1) We're going to take out the lower 1/3 or 2/3 frequent words and replace them with <UNK>
-# 2) For logistic regression, (and possibly other sklearn algorithms) we'll want to take either the min, max, or mean of the word vectors within each sentence instead of feeding the embeddings one by one like we'll do for the RNN.
-# * COMPLETE * 3) When developing your models, use a very small subset of the data (only 50 rows) so that it runs faster!
-
 # Miscellaneous
 import sqlite3
 import pandas as pd
