@@ -10,8 +10,10 @@ This project seeks to classify speech toxicity through the use of machine learni
 
 ## Motivation
 The internet has no shortage of toxicity, including threats, derogatory comments, and other such hate speech. For example, in less than 24 hours, Twitter users unwittingly managed to force Microsoft to shut down its chatbot Tay, by teaching it to repeat extremely hate-filled discourse. As such, large social media sites (such as Reddit!) are very hard to moderate.
+
 Before:
 ![](https://confluo.files.wordpress.com/2016/03/yyyy.png?w=640)
+
 After:
 ![](https://i.imgur.com/L2JRI7r.png)
 
