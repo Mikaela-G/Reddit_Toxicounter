@@ -1,7 +1,7 @@
 # Project Page Template (Header)
 # put in hyperlinks later
 ## Abstract
-This project seeks to classify speech toxicity through the use of machine learning models. Our toxicity ratings are derived from the Perspective API and our models were built in Python with the aid of libraries such as scikit-learn and Keras. We gathered [insert number of years] years worth of AskReddit comments from pushshift.io and store it in SQLite3 databases. [insert stuff about visualizations here].
+This project seeks to classify speech toxicity through the use of machine learning models. Our toxicity ratings are derived from the Perspective API and our models were built in Python with the aid of libraries such as scikit-learn and Keras. We gathered AskReddit comments from [insert starting year here] to 2018 from pushshift.io and stored them in SQLite3 databases. [insert stuff about visualizations here].
 
 ## Contributors 
 * Mikaela Guerrero 
