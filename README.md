@@ -1,5 +1,5 @@
 # Project Page Template (Header)
-# put in hyperlinks later
+
 ## Abstract
 This project seeks to classify speech toxicity through the use of machine learning models. Our toxicity ratings are derived from the [Perspective API](https://www.perspectiveapi.com/#/) and our models were built in Python with the aid of libraries such as [scikit-learn](https://scikit-learn.org/stable/) and [Keras](https://keras.io/). We gathered [AskReddit](https://www.reddit.com/r/AskReddit/) comments from [insert starting year here] to 2018 from [pushshift.io](https://pushshift.io/) and stored them in [SQLite3](https://www.sqlite.org/index.html) databases. [insert stuff about visualizations here].
 
@@ -111,7 +111,7 @@ Our analysis on the toxicity of Reddit comments deals with a relatively standard
 
 Using Perspective API's toxicity and severe toxicity models, we labeled our data with percentages that score toxicity for any given comment. We then created our own ground truth by placing comments into one of three categories (not toxic, moderately toxic, and very toxic) based on Perspective's ratings.
 
-## Our Pipeline
+## Our Pipeline for Text Classification
 [insert nice flowchart here]
 Data --> Word2Vec --> Machine Learning Models
 
@@ -120,8 +120,21 @@ Data --> Word2Vec --> Machine Learning Models
 * how did we preprocess the data for the Word2Vec model
 
 ## From Word2Vec to Machine Learning Models
-* give a brief overview of why we used supervised learning and why this is a classification problem
-* list all the classification models we used
+* why are we doing classification/what makes this a classification problem
+* why are we doing supervised learning
+* list all the supervised learning models we used for classification
+    * Logistic Regression
+    * Naive Bayes
+    * Random Forest
+    * LSTM
+    
+## Logistic Regression
+
+## Naive Bayes
+
+## Random Forest
+
+## LSTM (Long Short Term Memory)
 
 # REFORMAT THIS WHOLE SECTION (IGNORE THE BELOW)
 ## A Brief Overview of Classification
@@ -133,8 +146,6 @@ Data --> Word2Vec --> Machine Learning Models
         * Not toxic; had a score between [aaa and aaa] for toxicity, [aaa and aaa] for severe toxicity
 ## Word2Vec (and Word Embeddings)
 Since our Reddit data is text-based, we needed to transform it into an input readable by our machine learning models. To accomplish this, we trained a Word2Vec model on our data to produce word embeddings.
-
-
 
 ## Results
 
