@@ -1,6 +1,7 @@
-# Project Page Template (Header)
+# README - Reddit Toxicounter
 
 ## Abstract
+This project seeks to classify speech toxicity through the use of machine learning models. Our toxicity ratings are derived from the [Perspective API](https://www.perspectiveapi.com/#/) and our models were built in Python with the aid of libraries such as [scikit-learn](https://scikit-learn.org/stable/) and [Keras](https://keras.io/). We gathered [AskReddit](https://www.reddit.com/r/AskReddit/) comments from [insert starting year here] to 2018 from [pushshift.io](https://pushshift.io/) and stored them in [SQLite3](https://www.sqlite.org/index.html) databases. [insert stuff about visualizations here].
 
 ## Contributors 
 * Mikaela Guerrero 
@@ -8,6 +9,15 @@
 * Angel Chavez
 
 ## Motivation
+The internet has no shortage of toxicity, including threats, derogatory comments, and other such hate speech. For example, in less than 24 hours, Twitter users unwittingly managed to force Microsoft to shut down its chatbot Tay, by teaching it to repeat extremely hate-filled discourse. As such, large social media sites (such as Reddit!) are very hard to moderate.
+
+Before:
+
+![](https://confluo.files.wordpress.com/2016/03/yyyy.png?w=640)
+
+After:
+
+![](https://i.imgur.com/L2JRI7r.png)
 
 ## Scraping Methodology
 Important in every data analysis task is the retrieval, wrangling, and cleaning of data - in this respect, our group had no shortage of challenges. The number one concern when dealing with Reddit comment data is its sheer volume - one month's worth of comments from one subreddit can take more than 5 GB to store. This roadblock generated two practical concerns: the time it takes to scrape the data, and the memory limitations Python imposes. As a result, clever data scraping and handling technique had to be implemented in order to surmount the obstacle. 
@@ -97,6 +107,44 @@ sql_insert(comment_id, body, created_utc, score)
 5. Rinse and repeat
 
 ## Analysis Methodology
+Our analysis on the toxicity of Reddit comments deals with a relatively standard machine learning problem: multi-label classification. We deal with supervised learning, which in this instance, involves training a classifier on data already labeled for toxicity in order to predict the toxicity level of other comments.
+
+Using Perspective API's toxicity and severe toxicity models, we labeled our data with percentages that score toxicity for any given comment. We then created our own ground truth by placing comments into one of three categories (not toxic, moderately toxic, and very toxic) based on Perspective's ratings.
+
+## Our Text Classification Pipeline
+![pipeline](https://i.imgur.com/iuGu6RD.png)
+
+## From Data to Word2Vec
+* what is Word2Vec and why are we using it/what is the desired output (the word embeddings)
+* how did we preprocess the data for the Word2Vec model
+
+## From Word2Vec to Machine Learning Models
+* why are we doing classification/what makes this a classification problem
+* why are we doing supervised learning
+* list all the supervised learning models we used for classification
+    * Logistic Regression
+    * Naive Bayes
+    * Random Forest
+    * LSTM
+    
+## Logistic Regression
+
+## Naive Bayes
+
+## Random Forest
+
+## LSTM (Long Short Term Memory)
+
+# REFORMAT THIS WHOLE SECTION (IGNORE THE BELOW)
+## A Brief Overview of Classification
+* Two variables considered in building ML models:
+    * Comment (tokenized and mapped to word embeddings)
+    * Toxicity label for each comment
+        * Very toxic; had a score between [aaa and aaa] for toxicity, [aaa and aaa] for severe toxicity
+        * Moderately toxic; had a score between [aaa and aaa] for toxicity, [aaa and aaa] for severe toxicity
+        * Not toxic; had a score between [aaa and aaa] for toxicity, [aaa and aaa] for severe toxicity
+## Word2Vec (and Word Embeddings)
+Since our Reddit data is text-based, we needed to transform it into an input readable by our machine learning models. To accomplish this, we trained a Word2Vec model on our data to produce word embeddings.
 
 ## Results
 
