@@ -1,4 +1,4 @@
-# Project Page Template (Header)
+# README - Reddit Toxicounter
 
 ## Abstract
 This project seeks to classify speech toxicity through the use of machine learning models. Our toxicity ratings are derived from the [Perspective API](https://www.perspectiveapi.com/#/) and our models were built in Python with the aid of libraries such as [scikit-learn](https://scikit-learn.org/stable/) and [Keras](https://keras.io/). We gathered [AskReddit](https://www.reddit.com/r/AskReddit/) comments from [insert starting year here] to 2018 from [pushshift.io](https://pushshift.io/) and stored them in [SQLite3](https://www.sqlite.org/index.html) databases. [insert stuff about visualizations here].
