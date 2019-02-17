@@ -1,7 +1,7 @@
 # Project Page Template (Header)
-# put in hyperlinks later)
+# put in hyperlinks later
 ## Abstract
-This project seeks to classify speech toxicity through the use of machine learning models. Our toxicity ratings are derived from the [Perspective API](https://www.perspectiveapi.com/#/) and our models were built in Python with the aid of libraries such as [scikit-learn](https://scikit-learn.org/stable/) and [Keras](https://keras.io/). We gathered [AskReddit](https://www.reddit.com/r/AskReddit/) comments from [insert starting year here] to 2018 from [pushshift.io](https://pushshift.io/) and stored them in [SQLite3](https://www.sqlite.org/index.html) databases. [insert stuff about visualizations here].
+This project seeks to classify speech toxicity through the use of machine learning models. Our toxicity ratings are derived from the Perspective API and our models were built in Python with the aid of libraries such as scikit-learn and Keras. We gathered AskReddit comments from [insert starting year here] to 2018 from pushshift.io and stored them in SQLite3 databases. [insert stuff about visualizations here].
 
 ## Contributors 
 * Mikaela Guerrero 
@@ -107,12 +107,17 @@ sql_insert(comment_id, body, created_utc, score)
 5. Rinse and repeat
 
 ## Analysis Methodology
-Our analysis on the toxicity of Reddit comments deals with a relatively standard machine learning problem: multi-label classification. We deal with supervised learning, which in this instance, involves training a classifier on data already labeled for toxicity in order to predict the toxicity of other comments.
+Our analysis on the toxicity of Reddit comments deals with a relatively standard machine learning problem: multi-label classification. We deal with supervised learning, which in this instance, involves training a classifier on data already labeled for toxicity in order to predict the toxicity level of other comments.
 
-Using Perspective API's toxicity and severe toxicity models, we labeled our data with percentages that indicate the level of toxicity for any given comment. We then created our own ground truth by placing comments into one of three categories (not toxic, moderately toxic, and very toxic) based on Perspective's scores.
+Using Perspective API's toxicity and severe toxicity models, we labeled our data with percentages that score toxicity for any given comment. We then created our own ground truth by placing comments into one of three categories (not toxic, moderately toxic, and very toxic) based on Perspective's ratings.
 
-### A Brief Overview of Classification
-* 
+# A Brief Overview of Classification
+* [Insert number of variables of interest here]:
+    + adsfasdf
+
+# Word2Vec
+Since our Reddit data is text-based, we needed to transform it into an input readable by our machine learning models. To accomplish this, we trained a Word2Vec model on our data to produce word embeddings.
+
 
 ## Results
 
