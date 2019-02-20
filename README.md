@@ -26,7 +26,7 @@ In the beginning, we used the Praw API to directly scrape Reddit for comments, b
 
 At our project's conception, we weren't clear and concise on our thesis question, which lead to a scraping pattern that was highly inefficient; we basically scraped comments from ten of the most popular subreddits, which soon proved to be impossible due to volume. As a result, once we improved upon our research question to only scrape **one** subreddit, we were able to much more efficiently retrieve the data.
 
-In conclusion, in order to solve our memory problem, we utilized a SQL database and SQL batch injection. In order to solve our time problem, we used asyncio and aiohttp to send 2000 requests (scraping, labelling) at the same time, cutting down our scraping time a hundredfold. 
+In conclusion, in order to solve our memory problem, we utilized a SQL database and SQL batch injection. In order to solve our time problem, we used asyncio and aiohttp to send 2000 requests (scraping, labelling) at the same time, cutting down our scraping time a hundredfold; cloud computing also took out a chunk of the scraping work. 
 
 ## Analysis Methodology
 Our analysis on the toxicity of Reddit comments deals with a relatively standard machine learning problem: multi-label classification. We deal with supervised learning, which in this instance, involves training a classifier on data already labeled for toxicity in order to predict the toxicity level of other comments.
