@@ -30,82 +30,6 @@ This also brought with it many challenges. As mentioned before, one month's wort
 
 In terms of implementation, the workhorse of our scripts were requests, aiohttp, asyncio, and sqlite3. These four "horsemen of the pycalypse" ran incessantly for weeks, retrieving thousands of comments per second and storing them in a local SQL database. Here's a sample pseudo code of the process:
 
-```python
-subreddit = "AskReddit"
-timeframes = [(1233446400, 1235865600), (1235865600, 1238544000), (1238544000, 1272672000), (1272672000, 1243814400), (1243814400, 1246406400), (1246406400, 1249084800), (1249084800, 1251763200), (1251763200, 1254355200), (1254355200, 1257033600), (1257033600, 1259625600), (1259625600, 1262304000)]
-sql_transaction = []
-
-connection = sqlite3.connect('database/{}.db'.format(subreddit + timeframe))
-c = connection.cursor()
-
-def create_table():
-    c.execute("CREATE TABLE IF NOT EXISTS " + subreddit + " (comment_id TEXT PRIMARY KEY, comment TEXT, unix INT, score INT, toxicity REAL)")
-
-def clean_data(data):
-    comment = data.replace('\n',' newlinechar ').replace('\r',' newlinechar ').replace('"',"'")
-    # comment = re.sub(r'http\S+', '', comment)
-    comment = re.sub('&gt;', '', comment)
-    comment = re.sub('&lt;', '', comment)
-    return comment
-
-def sql_insert(commentid, comment, time, score):
-    try:
-        sql = """INSERT INTO """ + subreddit + """(comment_id, comment, unix, score) VALUES ("{}","{}",{},{});""".format(commentid, comment, int(time), score)
-        transaction_bldr(sql)
-    except Exception as e:
-        print('SQL insertion',str(e))
-
-if __name__ == '__main__':
-    try:
-    	for frame in timeframes:
-            after_utc = frame[0]
-            before_utc = frame[1]
-            create_table()
-            continue_scrape = True
-            while number_processed < 250:
-                r = requests.get('https://api.pushshift.io/reddit/search/comment/?subreddit={}&size=500&after={}&before={}&fields=id,body,created_utc,score'.format(subreddit, str(after_utc), str(before_utc)))
-                parsed_json = json.loads(r.text)
-                if len(parsed_json['data']) > 0:
-                        comment_processed = 0
-                        for comment in parsed_json['data']:
-                            body = clean_data(comment['body'])
-                            if acceptable(body):
-                                created_utc = comment['created_utc']
-                                score = comment['score']
-                                comment_id = comment['id']
-                                sql_insert(comment_id, body, created_utc, score)
-                                comment_processed += 1
-                            else:
-                                pass
-                        c.execute("VACUUM")
-                        connection.commit()
-                        after_utc = parsed_json['data'][-1]['created_utc']
-                        number_processed += 1
-                        print('Number of pages processed: {}'.format(number_processed), 'Number of comments processed: {}'.format(comment_processed), 'Current UTC: {}'.format(after_utc))
-```
-And here is a breakdown of the process:
-1. Create a database
-```python 
-connection = sqlite3.connect('database/{}.db'.format(subreddit + timeframe))
-c = connection.cursor()
-
-def create_table():
-    c.execute("CREATE TABLE IF NOT EXISTS " + subreddit + " (comment_id TEXT PRIMARY KEY, comment TEXT, unix INT, score INT, toxicity REAL)")
-```
-2. Scrape data using requests, pushshift.io
-```python 
-r = requests.get('https://api.pushshift.io/reddit/search/comment/?subreddit={}&size=500&after={}&before={}&fields=id,body,created_utc,score'.format(subreddit, str(after_utc), str(before_utc))
-```
-3. Extract the data from the json
-```python
-parsed_json = json.loads(r.text)
-```
-4. Insert data into the database
-```python
-sql_insert(comment_id, body, created_utc, score)
-```
-5. Rinse and repeat
-
 ## Analysis Methodology
 Our analysis on the toxicity of Reddit comments deals with a relatively standard machine learning problem: multi-label classification. We deal with supervised learning, which in this instance, involves training a classifier on data already labeled for toxicity in order to predict the toxicity level of other comments.
 
@@ -148,3 +72,6 @@ Each of these models took word embeddings as the input and predicted toxicity la
 ## Results
 
 ## Future Work
+Due to the singular nature of the subject of our project, an obvious expansion is to include more subreddits. We picked AskReddit to be our object of analysis because it was one of the most popular subreddits, which meant it had plenty of comments for analyses. However, that isn't to say that there are other subreddits that are just as active, and might even feature behavior that is distinct from that of AskReddit. 
+
+Consequently, it would be interesting to see whether models trained on a specific subreddit generalize well to other subreddits. Working hypotheses include: do different subreddits generate a language or vernacular of their own? what are 
