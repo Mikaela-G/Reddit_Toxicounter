@@ -34,7 +34,7 @@ from gensim.models import Word2Vec
 import warnings
 
 # Scikit-learn
-from sklearn import linear_model
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from sklearn.preprocessing import LabelEncoder
@@ -57,6 +57,8 @@ df = pd.read_sql_query("SELECT * FROM AskReddit", cnx)
 
 # use first 100 rows as dev set (COMMENT THIS OUT AFTER YOU FINISH SCRIPTING MODELS)
 df = df[:200]
+
+df
 df = df.dropna()
 
 # cleans text by removing characters and stop words
@@ -85,14 +87,14 @@ def avg_word_vec(wordlist,size):
     # Otherwise return an average of the embeddings vectors
     sumvec=np.zeros(shape=(1,size))
     wordcnt=0
-        for w in wordlist:
-            if w in w2v_model:
-                sumvec += w2v_model[w]
-                wordcnt +=1
-            if wordcnt ==0:
-                return sumvec
-        else:
-            return sumvec / wordcnt
+    for w in wordlist:
+        if w in w2v_model:
+            sumvec += w2v_model[w]
+            wordcnt +=1
+    if wordcnt ==0:
+        return sumvec
+    else:
+        return sumvec / wordcnt
 
 # tokenize comments
 df['comment_tok'] = df['comment'].apply(lambda x: nltk.word_tokenize(x))
@@ -144,8 +146,8 @@ X_train=np.concatenate([avg_word_vec(w,dimsize) for w in X_train])
 X_test=np.concatenate([avg_word_vec(w,dimsize) for w in X_test])
 
 # Fitting Logistic Regression to the Training set
-LR = linear_model.SGDClassifier(loss='log')
-LR.fit(X_train, y_train)
+LR = LogisticRegression(random_state=0, solver='lbfgs',
+                        multi_class='multinomial').fit(X_train, y_train)
 
 #arguments used in metrics
 y_true = y_test
