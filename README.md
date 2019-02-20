@@ -111,22 +111,26 @@ Our analysis on the toxicity of Reddit comments deals with a relatively standard
 
 Using Perspective API's toxicity and severe toxicity models, we labeled our data with percentages that score toxicity for any given comment. We then created our own ground truth by placing comments into one of three categories (not toxic, moderately toxic, and very toxic) based on Perspective's ratings.
 
+Our labels were created with the following thresholds:
+    *
+    *
+    *
+
 ## Our Text Classification Pipeline
 ![pipeline](https://i.imgur.com/iuGu6RD.png)
 
 ## From Data to Word2Vec
-Machine learning models typically take numerical features as input. Since our Reddit data is text-based, we needed some way to transform the comments into numerical input readable by the machine learning models. Thus, we generated word embeddings from the Reddit comments using a Word2Vec skip-gram model. Word embeddings are vectorized representations of words mapped to the same vector space and positioned according to similarity. Skip-gram architecture involves taking a single word and attempting to predict words that might occur alongside the target word.
+Machine learning models typically take numerical features as input. Since our Reddit data is text-based, we needed some way to transform the comments into numerical input readable by the machine learning models. Thus, we generated word embeddings from the tokenized Reddit comments using a Word2Vec skip-gram model. Word embeddings are vectorized representations of words mapped to the same vector space and positioned according to similarity. Skip-gram architecture involves taking a single word and attempting to predict words that might occur alongside the target word. We used Word2Vec's skip-gram rather than CBOW (Continuous Bag of Words) since skip-gram deals better with infrequent words.
 
 ## From Word2Vec to Machine Learning Models
-We then mapped each of the words in our data to their respective embeddings, with the intent of using the word embeddings as feature vectors.
+We then mapped each of the words in our dataset to their respective embeddings, with the intent of using said embeddings as feature vectors for supervised learning. We developed the following classification models:
 
-* why are we doing classification/what makes this a classification problem
-* why are we doing supervised learning
-* list all the supervised learning models we used for classification
     * Logistic Regression
     * Naive Bayes
     * Random Forest
     * LSTM
+
+Each of these models took word embeddings as the input and predicted toxicity labels as the output.
     
 ## Logistic Regression
 
