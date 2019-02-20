@@ -115,10 +115,14 @@ Using Perspective API's toxicity and severe toxicity models, we labeled our data
 ![pipeline](https://i.imgur.com/iuGu6RD.png)
 
 ## From Data to Word2Vec
+Machine learning models typically take numerical features as input. Since our Reddit data is text-based, we needed some way to transform the comments into numerical input readable by the machine learning models. Thus, we generated word embeddings from the Reddit comments using a Word2Vec skip-gram model. Word embeddings are vectorized representations of words mapped to the same vector space and positioned according to similarity.
+
+
 * what is Word2Vec and why are we using it/what is the desired output (the word embeddings)
 * how did we preprocess the data for the Word2Vec model
 
 ## From Word2Vec to Machine Learning Models
+We then mapped each of the words in our data to their respective embeddings
 * why are we doing classification/what makes this a classification problem
 * why are we doing supervised learning
 * list all the supervised learning models we used for classification
