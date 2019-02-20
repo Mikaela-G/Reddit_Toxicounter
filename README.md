@@ -134,6 +134,7 @@ We then mapped each of the words in our dataset to their respective embeddings, 
     * Naive Bayes
     * Random Forest
     * LSTM
+    
 Each of these models took word embeddings as the input and predicted toxicity labels as the output.
     
 ## Logistic Regression
@@ -143,15 +144,6 @@ Each of these models took word embeddings as the input and predicted toxicity la
 ## Random Forest
 
 ## LSTM (Long Short Term Memory)
-
-# REFORMAT THIS WHOLE SECTION (IGNORE THE BELOW)
-## A Brief Overview of Classification
-* Two variables considered in building ML models:
-    * Comment (tokenized and mapped to word embeddings)
-    * Toxicity label for each comment
-        * Very toxic; had a score between [aaa and aaa] for toxicity, [aaa and aaa] for severe toxicity
-        * Moderately toxic; had a score between [aaa and aaa] for toxicity, [aaa and aaa] for severe toxicity
-        * Not toxic; had a score between [aaa and aaa] for toxicity, [aaa and aaa] for severe toxicity
 
 ## Results
 
