@@ -115,14 +115,11 @@ Using Perspective API's toxicity and severe toxicity models, we labeled our data
 ![pipeline](https://i.imgur.com/iuGu6RD.png)
 
 ## From Data to Word2Vec
-Machine learning models typically take numerical features as input. Since our Reddit data is text-based, we needed some way to transform the comments into numerical input readable by the machine learning models. Thus, we generated word embeddings from the Reddit comments using a Word2Vec skip-gram model. Word embeddings are vectorized representations of words mapped to the same vector space and positioned according to similarity.
-
-
-* what is Word2Vec and why are we using it/what is the desired output (the word embeddings)
-* how did we preprocess the data for the Word2Vec model
+Machine learning models typically take numerical features as input. Since our Reddit data is text-based, we needed some way to transform the comments into numerical input readable by the machine learning models. Thus, we generated word embeddings from the Reddit comments using a Word2Vec skip-gram model. Word embeddings are vectorized representations of words mapped to the same vector space and positioned according to similarity. Skip-gram architecture involves taking a single word and attempting to predict words that might occur alongside the target word.
 
 ## From Word2Vec to Machine Learning Models
-We then mapped each of the words in our data to their respective embeddings
+We then mapped each of the words in our data to their respective embeddings, with the intent of using the word embeddings as feature vectors.
+
 * why are we doing classification/what makes this a classification problem
 * why are we doing supervised learning
 * list all the supervised learning models we used for classification
@@ -147,8 +144,6 @@ We then mapped each of the words in our data to their respective embeddings
         * Very toxic; had a score between [aaa and aaa] for toxicity, [aaa and aaa] for severe toxicity
         * Moderately toxic; had a score between [aaa and aaa] for toxicity, [aaa and aaa] for severe toxicity
         * Not toxic; had a score between [aaa and aaa] for toxicity, [aaa and aaa] for severe toxicity
-## Word2Vec (and Word Embeddings)
-Since our Reddit data is text-based, we needed to transform it into an input readable by our machine learning models. To accomplish this, we trained a Word2Vec model on our data to produce word embeddings.
 
 ## Results
 
