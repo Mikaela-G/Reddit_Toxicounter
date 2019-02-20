@@ -238,7 +238,7 @@ Y_test = encoder.transform(Y_test)
 # one hot encode class value integers
 Y_test= np_utils.to_categorical(Y_test)
 
-######### MODELING #########
+######### MODELING ######### MAKE IT A BI-LSTM
 
 model = Sequential()
 model.add(Embedding(vocab_size, 300, weights=[embedding_matrix], input_length=max_length))
