@@ -28,7 +28,7 @@ At our project's conception, we weren't clear and concise on our thesis question
 
 This also brought with it many challenges. As mentioned before, one month's worth of comments from one subreddit alone can tally up to 20 million comments. Pressured by an approaching deadline and limitations on work hours, we came to the conclusion that scraping samples of data were the optimal solution. By scraping a predetermined percentage of comments from each month, we were able to cover the scope of a subreddit's sentiment, to see how its temperament change over time, how it reacts to noteworthy events. We finally reached the best scraping mindset, and all that was left to do was implemenation. 
 
-In terms of implementation, the workhorse of our scripts were requests, aiohttp, asyncio, and sqlite3. These four "horsemen of the pycalypse" ran incessantly for weeks, retrieving thousands of comments per second and storing them in a local SQL database. Here's a sample pseudo code of the process:
+In terms of implementation, the workhorse of our scripts were requests, aiohttp, asyncio, and sqlite3. These four "horsemen of the pycalypse" ran incessantly for weeks, retrieving thousands of comments per second and storing them in a local SQL database. 
 
 ## Analysis Methodology
 Our analysis on the toxicity of Reddit comments deals with a relatively standard machine learning problem: multi-label classification. We deal with supervised learning, which in this instance, involves training a classifier on data already labeled for toxicity in order to predict the toxicity level of other comments.
@@ -76,6 +76,6 @@ Due to the singular nature of the subject of our project, an obvious expansion i
 
 Consequently, it would be interesting to see whether models trained on a specific subreddit generalize well to other subreddits. Working hypotheses include: do different subreddits generate a language or vernacular of their own? what are some of the similar or different features between subreddits? how can we aggregate separate analyses on different subreddits to potentially a "catch-all" monitor that generalizes to the whole of Reddit?
 
-In terms of data visualization, a main goal of the group was to create an interactive web app that would chart the change in toxicitiy of AskReddit over time. We would also highlight key historical events, to see how they did or did not affect the toxicity of AskReddit.
+In terms of data visualization, a main goal of the group was to create an interactive web app that would chart the change in toxicitiy of AskReddit over time. We would also highlight key historical events, to see how they did or did not affect the toxicity of AskReddit. The data visualization itself is relatively simple, so there would be an emphasis on the user interface and accessibility. 
 
 ![](https://img.business.com/o/aHR0cHM6Ly93d3cuYnVzaW5lc3NuZXdzZGFpbHkuY29tL2ltYWdlcy9pLzAwMC8wMTIvMTcwL2kwMi9saW5lLWNoYXJ0LnBuZz8xNDcwODUxMTQz)
