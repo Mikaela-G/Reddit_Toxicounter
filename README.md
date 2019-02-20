@@ -79,6 +79,10 @@ Our motivation for choosing Random Forest as one of the models were:
    * Our dataset boasted more than 20 million comments, so a high functioning model was a necessity. 
 
 ## LSTM (Long Short Term Memory)
+Lastly, we implemented an LSTM for the following reasons:
+* We have a huge amount of data, which is required for neural networks.
+* In regards to text classification, Recurrent Neural Networks typically outperform other models.
+* LSTMs perform better than standard RNNs because they can access a larger frame of context.
 
 ## Results
 
