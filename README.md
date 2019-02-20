@@ -134,6 +134,7 @@ We then mapped each of the words in our dataset to their respective embeddings, 
 * Naive Bayes
 * Random Forest
 * LSTM
+
 Each of these models took word embeddings as the input and predicted toxicity labels as the output.
     
 ## Logistic Regression
