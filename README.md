@@ -60,8 +60,14 @@ We then mapped each of the words in our dataset to their respective embeddings, 
 Each of these models took word embeddings as the input and predicted toxicity labels as the output.
     
 ## Logistic Regression
+Multinomial Logistic Regression is a standard model to use for text classification:
+* Simple to implement with sklearn.
+* Performs with good enough accuracy for a baseline model.
 
 ## Naive Bayes
+We chose to implement the Naive Bayes algorithm because:
+* Just as with the other models, Naive Bayes performs well for multi-class text classification.
+* It is simple, takes less training time, and is not prone to over fitting.
 
 ## Random Forest
 Our motivation for choosing Random Forest as one of the models were:
