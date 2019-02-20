@@ -49,6 +49,7 @@ Our labels were created with the following thresholds:
 
 ## From Data to Word2Vec
 Machine learning models typically take numerical features as input. Since our Reddit data is text-based, we needed some way to transform the comments into numerical input readable by the machine learning models. Thus, we generated word embeddings from the tokenized Reddit comments using a Word2Vec skip-gram model. Word embeddings are vectorized representations of words mapped to the same vector space and positioned according to similarity. Skip-gram architecture involves taking a single word and attempting to predict words that might occur alongside the target word. We used Word2Vec's skip-gram rather than CBOW (Continuous Bag of Words) since skip-gram deals better with infrequent words.
+![](https://raw.githubusercontent.com/Mikaela-G/Reddit_Toxicounter/master/temp_images/word_embeddings_diagram.png)
 
 ## From Word2Vec to Machine Learning Models
 We then mapped each of the words in our dataset to their respective embeddings, with the intent of using said embeddings as feature vectors for supervised learning. We developed the following classification models:
