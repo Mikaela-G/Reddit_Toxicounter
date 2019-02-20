@@ -69,7 +69,11 @@ Each of these models took word embeddings as the input and predicted toxicity la
 
 ## LSTM (Long Short Term Memory)
 
+## Summary and Resources
+N/A
+
 ## Results
+N/A
 
 ## Future Work
 Due to the singular nature of the subject of our project, an obvious expansion is to include more subreddits. We picked AskReddit to be our object of analysis because it was one of the most popular subreddits, which meant it had plenty of comments for analyses. However, that isn't to say that there are other subreddits that are just as active, and might even feature behavior that is distinct from that of AskReddit. 
