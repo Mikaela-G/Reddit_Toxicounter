@@ -86,7 +86,7 @@ Lastly, we implemented an LSTM for the following reasons:
 * LSTMs perform better than standard RNNs because they can access a larger frame of context.
 
 ## Results
-We get an unexpected set of results using our dev sets. The Logistic Regression and Random Forest do surprisingly well, whereas the Naive Bayes and LSTM perform rather poorly.
+We get an unexpected set of results using our dev sets. The Logistic Regression and Random Forest do surprisingly well, whereas the Naive Bayes and LSTM perform relatively poorly.
 ![](https://raw.githubusercontent.com/Mikaela-G/Reddit_Toxicounter/master/temp_images/LR_results.png)
 ![](https://raw.githubusercontent.com/Mikaela-G/Reddit_Toxicounter/master/temp_images/NB_results.png)
 ![](https://raw.githubusercontent.com/Mikaela-G/Reddit_Toxicounter/master/temp_images/RF_results.png)
