@@ -69,13 +69,13 @@ Each of these models took word embeddings as the input and predicted toxicity la
 
 ## LSTM (Long Short Term Memory)
 
-## Summary and Resources
-N/A
-
 ## Results
-N/A
 
 ## Future Work
 Due to the singular nature of the subject of our project, an obvious expansion is to include more subreddits. We picked AskReddit to be our object of analysis because it was one of the most popular subreddits, which meant it had plenty of comments for analyses. However, that isn't to say that there are other subreddits that are just as active, and might even feature behavior that is distinct from that of AskReddit. 
 
-Consequently, it would be interesting to see whether models trained on a specific subreddit generalize well to other subreddits. Working hypotheses include: do different subreddits generate a language or vernacular of their own? what are 
+Consequently, it would be interesting to see whether models trained on a specific subreddit generalize well to other subreddits. Working hypotheses include: do different subreddits generate a language or vernacular of their own? what are some of the similar or different features between subreddits? how can we aggregate separate analyses on different subreddits to potentially a "catch-all" monitor that generalizes to the whole of Reddit?
+
+In terms of data visualization, a main goal of the group was to create an interactive web app that would chart the change in toxicitiy of AskReddit over time. We would also highlight key historical events, to see how they did or did not affect the toxicity of AskReddit.
+
+![](https://img.business.com/o/aHR0cHM6Ly93d3cuYnVzaW5lc3NuZXdzZGFpbHkuY29tL2ltYWdlcy9pLzAwMC8wMTIvMTcwL2kwMi9saW5lLWNoYXJ0LnBuZz8xNDcwODUxMTQz)
