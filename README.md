@@ -112,15 +112,15 @@ Our analysis on the toxicity of Reddit comments deals with a relatively standard
 Using Perspective API's toxicity and severe toxicity models, we labeled our data with percentages that score toxicity for any given comment. We then created our own ground truth by placing comments into one of three categories (not toxic, moderately toxic, and very toxic) based on Perspective's ratings.
 
 Our labels were created with the following thresholds:
-    * Not toxic
-        * Toxicity score is less than 40%
-        * Severe toxicity score is less than 75%
-    * Moderately toxic
-        * Toxicity score is greater than or equal to 40% and less than 90%
-        * Severe toxicity score is greater than or equal to 10%
-    * Very toxic
-        * Toxicity score is greater than or equal to 90%
-        * Severe toxicity score is greater than or equal to 75%
+* Not toxic
+    * Toxicity score is less than 40%
+    * Severe toxicity score is less than 75%
+* Moderately toxic
+    * Toxicity score is greater than or equal to 40% and less than 90%
+    * Severe toxicity score is greater than or equal to 10%
+* Very toxic
+    * Toxicity score is greater than or equal to 90%
+    * Severe toxicity score is greater than or equal to 75%
         
 ## Our Text Classification Pipeline
 ![pipeline](https://i.imgur.com/iuGu6RD.png)
@@ -130,11 +130,10 @@ Machine learning models typically take numerical features as input. Since our Re
 
 ## From Word2Vec to Machine Learning Models
 We then mapped each of the words in our dataset to their respective embeddings, with the intent of using said embeddings as feature vectors for supervised learning. We developed the following classification models:
-    * Logistic Regression
-    * Naive Bayes
-    * Random Forest
-    * LSTM
-    
+* Logistic Regression
+* Naive Bayes
+* Random Forest
+* LSTM
 Each of these models took word embeddings as the input and predicted toxicity labels as the output.
     
 ## Logistic Regression
