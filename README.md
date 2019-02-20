@@ -66,6 +66,13 @@ Each of these models took word embeddings as the input and predicted toxicity la
 ## Naive Bayes
 
 ## Random Forest
+Our motivation for choosing Random Forest as one of the models were:
+* It provides higher accuracy.
+   * This one is a no brainer. Higher accuracy = better results for days
+* Random forest classifier will handle the missing values and maintain the accuracy of a large proportion of data.
+   * Comments are messy, ranging from single urls to sprawling paragraphs of text. As a result, there are often times Nan values that get pass our data cleaner. 
+* It has the power to handle a large data set with higher dimensionality
+   * Our dataset boasted more than 20 million comments, so a high functioning model was a necessity. 
 
 ## LSTM (Long Short Term Memory)
 
