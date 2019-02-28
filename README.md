@@ -29,7 +29,7 @@ At our project's conception, we weren't clear and concise on our thesis question
 In conclusion, in order to solve our memory problem, we utilized a SQL database and SQL batch injection. In order to solve our time problem, we used asyncio and aiohttp to send 2000 requests (scraping, labelling) at the same time, cutting down our scraping time a hundredfold; cloud computing also took out a chunk of the scraping work. 
 
 ## Analysis Methodology
-Our analysis on the toxicity of Reddit comments deals with a relatively standard machine learning problem: multi-label classification. We deal with supervised learning, which in this instance, involves training a classifier on data already labeled for toxicity in order to predict the toxicity level of other comments.
+Our analysis on the toxicity of Reddit comments deals with a relatively standard machine learning problem: multi-class classification. We deal with supervised learning, which in this instance, involves training a classifier on data already labeled for toxicity in order to predict the toxicity level of other comments.
 
 Using Perspective API's toxicity and severe toxicity models, we labeled our data with percentages that score toxicity for any given comment. We then created our own ground truth by placing comments into one of three categories (not toxic, moderately toxic, and very toxic) based on Perspective's ratings.
 

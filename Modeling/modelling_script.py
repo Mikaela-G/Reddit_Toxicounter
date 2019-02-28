@@ -46,10 +46,13 @@ from keras.utils import np_utils
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import Sequential
-from keras.layers import Dense, Flatten, LSTM
+from keras.layers import Dense, Flatten, Bidirectional, LSTM
 from keras.layers.embeddings import Embedding
 
 # ------------------------------------- Preprocessing ------------------------------------- #
+
+# ensures reproducibility
+np.random.seed(42)
 
 # load database into dataframe
 cnx = sqlite3.connect('/Users/Mikki/Documents/GitHub/Reddit_Toxicounter/database/reddit_comments_2.db')
@@ -58,7 +61,6 @@ df = pd.read_sql_query("SELECT * FROM AskReddit", cnx)
 # use first 100 rows as dev set (COMMENT THIS OUT AFTER YOU FINISH SCRIPTING MODELS)
 df = df[:200]
 
-df
 df = df.dropna()
 
 # cleans text by removing characters and stop words
@@ -105,7 +107,7 @@ c = Counter(flat_list)
 
 # replace low frequency words (freq < 5) with <unk>
 def low_freq_to_unk(comment):
-    return [word if c[word]>2 else '<unk>' for word in comment]
+    return [word if c[word]>5 else '<unk>' for word in comment]
 df['comment_tok'] = df['comment_tok'].apply(low_freq_to_unk)
 
 # split into train/test sets
@@ -123,7 +125,7 @@ Y_test = y_test
 # ------------------------------------- Word2Vec ------------------------------------- #
 
 # train Word2Vec skip gram model on tokenized comments
-w2v_model = Word2Vec(X_train, size=dimsize, window=10, min_count=5, negative=15, iter=10, sg=1) # print(w2v_model)
+w2v_model = Word2Vec(X_train, size=dimsize, window=10, workers=2, sg=1, negative=15, iter=5) # print(w2v_model)
 
 # gets vocabulary
 vocab = list(w2v_model.wv.vocab) # print(vocab)
@@ -186,63 +188,57 @@ print(confusion_matrix(y_true, y_predRF))
 # ------------------------------------- K-Nearest Neighbor (Mikki) ------------------------------------- #
 # ------------------------------------- LSTM (Mikki) ------------------------------------- #
 
-# ensures reproducibility
-np.random.seed(42)
+######### PREPROCESSING X_TRAINING DATA FOR MODEL #########
 
-######### PREPROCESSING TRAINING DATA FOR MODEL #########
-
-# prepare tokenizer
+# fitting tokenizer on training data
 t = Tokenizer()
 t.fit_on_texts(x_train)
 vocab_size = len(t.word_index) + 1 # t.word_index returns key-value pairs of token to unique integer
 
-# integer encode documents (produces list of lists of tokens as integers)
+# integer encode tokenized comments (produces list of lists of tokens as integers)
 x_train = t.texts_to_sequences(x_train)
 
-# pad sequences so that each doc is the same length
-max_length = max([len(doc) for doc in x_train])
+# pad sequences so that each comment sequence is the same length
+max_length = max([len(comment) for comment in x_train])
 x_train = pad_sequences(x_train, maxlen=max_length, padding='post')
 
-# create a weight matrix for words in training docs
-embedding_matrix = np.zeros((vocab_size, 300))
+# create a weight matrix for training data words
+embedding_matrix = np.zeros((vocab_size, dimsize))
 for word, index in t.word_index.items():
-    embed_vector = w2v_embed_dict.get(word)
+    embed_vector = w2v_embed_dict.get(word) # matching words to their Word2Vec embeddings
     if embed_vector is not None:
         embedding_matrix[index] = embed_vector
     else:
-        embedding_matrix[index] = w2v_embed_dict.get('<unk>')
+        embedding_matrix[index] = w2v_embed_dict.get('<unk>') # unknown words are given the embedding for <unk>
 
-# encode class values as integers
-encoder = LabelEncoder()
-encoder.fit(Y_train)
-Y_train = encoder.transform(Y_train)
-# one hot encode class value integers
-Y_train = np_utils.to_categorical(Y_train)
+######### PREPROCESSING X_TESTING DATA FOR MODEL #########
 
-######### PREPROCESSING TESTING DATA FOR MODEL #########
-
-# prepare tokenizer
+# fitting tokenizer on testing data
 t = Tokenizer()
 t.fit_on_texts(x_test)
 
-# integer encode documents (produces list of lists of tokens as integers)
+# integer encode tokenized comments (produces list of lists of tokens as integers)
 x_test = t.texts_to_sequences(x_test)
 
-# pad sequences so that each doc is the same length
+# pad sequences so that each comment sequence is the same length
 x_test = pad_sequences(x_test, maxlen=max_length, padding='post')
 
-# encode class values as integers
-encoder = LabelEncoder()
-encoder.fit(y_test)
-Y_test = encoder.transform(Y_test)
-# one hot encode class value integers
-Y_test= np_utils.to_categorical(Y_test)
+######### PREPROCESSING Y_TARGET DATA FOR MODEL #########
 
-######### MODELING ######### MAKE IT A BI-LSTM
+# integer encoding and then one hot encoding toxicity labels
+encoder = LabelEncoder()
+encoder.fit_transform(y)
+Y_train = encoder.transform(Y_train)
+Y_test = encoder.transform(Y_test)
+
+Y_train = np_utils.to_categorical(Y_train)
+Y_test = np_utils.to_categorical(Y_test)
+
+######### MODELING #########
 
 model = Sequential()
-model.add(Embedding(vocab_size, 300, weights=[embedding_matrix], input_length=max_length))
-model.add(LSTM(300))
+model.add(Embedding(vocab_size, dimsize, weights=[embedding_matrix], input_length=max_length))
+model.add(Bidirectional(LSTM(dimsize)))
 model.add(Dense(3, activation='softmax'))
 
 # compile model
