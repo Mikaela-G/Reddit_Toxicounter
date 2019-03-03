@@ -8,11 +8,11 @@ Goals:
         Logistic Regression (Angel)
         Naive Bayes (Angel)
         Random Forest (Angel)
-        SVM (Mikki)
+        SVM (Minh)
         K-Nearest Neighbor (Minh)
         LSTM (Mikki)
         BERT? using AWS server
-References:
+Sources:
     https://machinelearningmastery.com/multi-class-classification-tutorial-keras-deep-learning-library/
     https://machinelearningmastery.com/develop-word-embeddings-python-gensim/
     https://blog.cambridgespark.com/tutorial-build-your-own-embedding-and-use-it-in-a-neural-network-e9cde4a81296
@@ -31,12 +31,12 @@ from nltk.corpus import stopwords
 from bs4 import BeautifulSoup
 from collections import Counter
 from gensim.models import Word2Vec
-import warnings
+import matplotlib.pyplot as plt
 
 # Scikit-learn
-from sklearn.linear_model import LogisticRegression
+from sklearn import linear_model
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, matthews_corrcoef, f1_score, confusion_matrix, classification_report
 from sklearn.preprocessing import LabelEncoder
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
@@ -54,12 +54,12 @@ from keras.layers.embeddings import Embedding
 # ensures reproducibility
 np.random.seed(42)
 
-# load database into dataframe
+# loads database into dataframe
 cnx = sqlite3.connect('/Users/Mikki/Documents/GitHub/Reddit_Toxicounter/database/reddit_comments_2.db')
 df = pd.read_sql_query("SELECT * FROM AskReddit", cnx)
 
-# use first 100 rows as dev set (COMMENT THIS OUT AFTER YOU FINISH SCRIPTING MODELS)
-df = df[:200]
+# use first 150 rows as dev set (COMMENT THIS OUT AFTER YOU FINISH SCRIPTING MODELS)
+df = df[:150]
 
 df = df.dropna()
 
@@ -106,6 +106,7 @@ flat_list = [word for comment in df.comment_tok for word in comment]
 c = Counter(flat_list)
 
 # replace low frequency words (freq < 5) with <unk>
+# <unk> will serve as a placeholder for infrequent and unknown words
 def low_freq_to_unk(comment):
     return [word if c[word]>5 else '<unk>' for word in comment]
 df['comment_tok'] = df['comment_tok'].apply(low_freq_to_unk)
@@ -114,23 +115,26 @@ df['comment_tok'] = df['comment_tok'].apply(low_freq_to_unk)
 X = df.comment_tok
 y = df.toxic_label # NOTE: real_toxic_label for current data but TOXIC_LABEL FOR THE FINAL VERSION
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-dimsize = 300
 
-# preserving variables to be used for LSTM
+# preserve variables to be used for LSTM
+# (original variables will be rewritten for the Logistic Regression model)
 x_train = X_train
 x_test = X_test
 Y_train = y_train
 Y_test = y_test
+
+# set word vector dimensionality
+dimsize = 300
 
 # ------------------------------------- Word2Vec ------------------------------------- #
 
 # train Word2Vec skip gram model on tokenized comments
 w2v_model = Word2Vec(X_train, size=dimsize, window=10, workers=2, sg=1, negative=15, iter=5) # print(w2v_model)
 
-# gets vocabulary
+# get vocabulary
 vocab = list(w2v_model.wv.vocab) # print(vocab)
 
-# store word-vector pairs in dictionary
+# store words and their vector representations as key-value pairs in dictionary
 w2v_embed_dict = {word: w2v_model.wv[word] for word in vocab}
 
 # saves word embeddings so they can be re-used for different classification models
@@ -188,44 +192,38 @@ print(confusion_matrix(y_true, y_predRF))
 # ------------------------------------- K-Nearest Neighbor (Mikki) ------------------------------------- #
 # ------------------------------------- LSTM (Mikki) ------------------------------------- #
 
-######### PREPROCESSING X_TRAINING DATA FOR MODEL #########
+######### PREPROCESSING X DATA FOR MODEL #########
 
-# fitting tokenizer on training data
-t = Tokenizer()
-t.fit_on_texts(x_train)
-vocab_size = len(t.word_index) + 1 # t.word_index returns key-value pairs of token to unique integer
+# fit tokenizers on training and testing data
+tr = Tokenizer() # training tokenizer
+te = Tokenizer() # testing tokenizer
+tr.fit_on_texts(x_train)
+te.fit_on_texts(x_test)
+
+# find the number of all unique words in the vocab
+vocab_size = len(tr.word_index) + 1
 
 # integer encode tokenized comments (produces list of lists of tokens as integers)
-x_train = t.texts_to_sequences(x_train)
+x_train = tr.texts_to_sequences(x_train)
+x_test = te.texts_to_sequences(x_test)
 
 # pad sequences so that each comment sequence is the same length
 max_length = max([len(comment) for comment in x_train])
 x_train = pad_sequences(x_train, maxlen=max_length, padding='post')
+x_test = pad_sequences(x_test, maxlen=max_length, padding='post')
 
 # create a weight matrix for training data words
 embedding_matrix = np.zeros((vocab_size, dimsize))
-for word, index in t.word_index.items():
+for word, index in tr.word_index.items():
     embed_vector = w2v_embed_dict.get(word) # matching words to their Word2Vec embeddings
     if embed_vector is not None:
         embedding_matrix[index] = embed_vector
     else:
-        embedding_matrix[index] = w2v_embed_dict.get('<unk>') # unknown words are given the embedding for <unk>
+        embedding_matrix[index] = w2v_embed_dict.get('<unk>')
 
-######### PREPROCESSING X_TESTING DATA FOR MODEL #########
+######### PREPROCESSING Y DATA FOR MODEL #########
 
-# fitting tokenizer on testing data
-t = Tokenizer()
-t.fit_on_texts(x_test)
-
-# integer encode tokenized comments (produces list of lists of tokens as integers)
-x_test = t.texts_to_sequences(x_test)
-
-# pad sequences so that each comment sequence is the same length
-x_test = pad_sequences(x_test, maxlen=max_length, padding='post')
-
-######### PREPROCESSING Y_TARGET DATA FOR MODEL #########
-
-# integer encoding and then one hot encoding toxicity labels
+# integer encode and then one hot encode toxicity labels
 encoder = LabelEncoder()
 encoder.fit_transform(y)
 Y_train = encoder.transform(Y_train)
@@ -236,35 +234,76 @@ Y_test = np_utils.to_categorical(Y_test)
 
 ######### MODELING #########
 
+# build the model
 model = Sequential()
-model.add(Embedding(vocab_size, dimsize, weights=[embedding_matrix], input_length=max_length))
-model.add(Bidirectional(LSTM(dimsize)))
-model.add(Dense(3, activation='softmax'))
+model.add(Embedding(vocab_size, dimsize, weights=[embedding_matrix], input_length=max_length)) # input layer
+model.add(Bidirectional(LSTM(units=dimsize)))
+model.add(Dense(3, activation='softmax')) # output layer
 
 # compile model
-model.compile(optimizer='rmsprop',
-              loss='categorical_crossentropy',
-              metrics=['accuracy'])
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # summarize model
 print(model.summary())
 
-# fit the model
-model.fit(x_train, Y_train, epochs=10, verbose=0)
+# fit the model (higher batch size and lower number of epochs due to large number of samples)
+history = model.fit(x_train, Y_train, batch_size=256, epochs=4, verbose=1, shuffle=True, validation_split=0.1)
 
-# evaluate the model
-loss, accuracy = model.evaluate(x_test, Y_test, verbose=0)
+# graph training & validation accuracy across epochs
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+plt.title('Model accuracy')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='upper left')
+plt.show()
+
+# graph training & validation loss across epochs
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Model loss')
+plt.ylabel('Loss')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='upper right')
+plt.show()
+
+# evaluate the model with Keras metrics
+loss, accuracy = model.evaluate(x_test, Y_test, verbose=1)
+print('Loss: ' + str(loss)) # loss can be greater than 1 here since we are using categorical cross-entropy
 print('Accuracy: %f' % (accuracy*100))
 
+# preparation for evaluating the model with sklearn metrics
+# one hot encoding to integer encoding
+Y_test = list(Y_test.argmax(axis=-1))
+# predict toxicity labels
+Y_pred = list(model.predict_classes(x_test))
+
+# create a dataframe to compare labels
+output = pd.DataFrame({'Actual': Y_test}) # test set labels
+output['Dumb'] = 1 # the output of a model that would score everything as "not_toxic"
+output['LSTM'] = Y_pred # labels predicted by the LSTM
+output.head()
+
+# evaluate the model with sklearn metrics
+def class_metrics(*args):
+    for column in args:
+        print('Scores for model', column)
+        print('Classification accuracy:', accuracy_score(output.Actual, output[column]))
+        print('Matthews coefficient:', matthews_corrcoef(output.Actual, output[column]))
+        print('F1 score:', f1_score(output.Actual, output[column], average='micro'))
+        print()
+class_metrics('Actual','Dumb','LSTM')
+
+# confusion matrix for the test set and the model
+# 0 = "moderately_toxic"
+# 1 = "not_toxic"
+# 2 = "severely toxic"
+pd.crosstab(output.Actual, output.LSTM)
 
 
 
-# so when you build a machine learning model
-# you take the words, tokenize them, map tokens to their vectors, get the sequence of vectors for a sentence
 
-# you would feed in each embedding one by one
-# so if your comment was "I like pie"
-# you'd use the embeddings of "I", "like" and "pie" as your input
+
 
 
 # we're making two types of models:
@@ -284,9 +323,8 @@ print('Accuracy: %f' % (accuracy*100))
 #   regression models that analyze the interaction between toxic_label, time, and score
 
 # things we need to do before modeling:
-#   create 2 new columns: severe_toxicity, toxic_label
-#       (toxicity_label will be our new ground truth)
-#   create word embeddings using Word2Vec
+#   create toxic_label column
+#       (toxic_label will be our new ground truth)
 
 # for the first type of model:
 #   input for the main model = word embeddings; other linguistic information (like number of uppercase or punctuation or etc.)
