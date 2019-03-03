@@ -56,7 +56,7 @@ We then mapped each of the words in our dataset to their respective embeddings, 
 * Logistic Regression
 * Naive Bayes
 * Random Forest
-* LSTM
+* Bidirectional LSTM
 
 Each of these models took word embeddings as the input and predicted toxicity labels as the output.
     
@@ -79,11 +79,12 @@ Our motivation for choosing Random Forest as one of the models were:
 * It has the power to handle a large data set with higher dimensionality
    * Our dataset boasted more than 20 million comments, so a high functioning model was a necessity. 
 
-## LSTM (Long Short Term Memory)
+## Bidirectional LSTM (Long Short Term Memory)
 Lastly, we implemented an LSTM for the following reasons:
 * We have a huge amount of data, which is required for neural networks.
 * In regards to text classification, Recurrent Neural Networks typically outperform other models.
 * LSTMs perform better than standard RNNs because they can access a larger frame of context.
+* BiLSTMs understand context better than LSTMs.
 
 ## Results
 We get an unexpected set of results using our dev sets. The Logistic Regression and Random Forest do surprisingly well, whereas the Naive Bayes and LSTM perform relatively poorly.
