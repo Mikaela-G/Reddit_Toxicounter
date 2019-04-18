@@ -6,14 +6,21 @@ library(quanteda)
 library(tidytext)
 
 # import sqlite database as dataframe
-con = dbConnect(SQLite(), dbname="/Users/Mikki/Documents/GitHub/Reddit_Toxicounter/AskRedditScrape 2016-Recent/database/AskReddit_2016 - Recent.db")
-myQuery <- dbSendQuery(con, "SELECT * FROM AskReddit")
-df <- dbFetch(myQuery, n=10000) # n=-1 for all records
+con = dbConnect(SQLite(), dbname="/Users/Mikki/Documents/GitHub/Reddit_Toxicounter/database/AskReddit_Complete.db")
+myQuery <- dbSendQuery(con, "SELECT * FROM AskReddit WHERE toxic_label NOT NULL AND toxic_label not like '%None%'")
+df <- dbFetch(myQuery, n=-1) # n=-1 for all records
+
+# drop NAs and Nones
+#df <- subset(df, !(is.na(toxic_label) | toxic_label=='None'))
+###################### TOXICITY BAR PLOT ######################
+
+# bar plot for toxic_label frequency
+ggplot(df, aes(x=df$toxic_label)) + geom_bar(aes(y=(..count..)/sum(..count..)), fill="red", color="darkred", width=0.9, alpha = .2) + xlab("Toxic Label") + ylab("Frequency") + theme(axis.text.x=element_text()) + scale_y_continuous(labels = scales::percent) #+ geom_text(aes(y=(..count..)/sum(..count..))+.5, label=paste0(((..count..)/sum(..count..))+.5)), '%'), position = position_dodge(width=.9), size=3)
+
+###################### WORD CLOUDS ######################
 
 # removing all "newlinechar" from the df
 df$comment <- gsub("newlinechar", " ", df$comment)
-
-###################### WORD CLOUDS ######################
 
 # creating word cloud for all the comments in the df
 df.corpus <- corpus(df, text_field = "comment")
@@ -40,11 +47,6 @@ very.toxic.cloud <- textplot_wordcloud(very.toxic.dfm)
 
 #rm(list=ls())
 #dbClearResult(myQuery)
-
-###################### TOXICITY BAR PLOT ######################
-
-# bar plot for toxic_label frequency
-ggplot(df, aes(x=df$toxic_label)) + geom_bar(fill="red", color="darkred", width=0.9, alpha = .2) + xlab("Toxic Label") + ylab("Frequency") + theme(axis.text.x=element_text(angle=20,hjust=1))
 
 ###################### TOXICITY OVER TIME ######################
 
